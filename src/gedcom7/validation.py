@@ -16,7 +16,7 @@ from __future__ import annotations
 from collections.abc import Iterator
 from dataclasses import dataclass
 
-from .model import Document, Family, Submitter, VoidPointer
+from .model import Document, Family, Individual, Submitter, VoidPointer
 
 
 class ValidationError(ValueError):
@@ -49,6 +49,25 @@ def _issues(document: Document) -> Iterator[Issue]:
 
         if isinstance(record, Family):
             yield from _family_issues(record, known)
+
+        if isinstance(record, Individual | Family):
+            yield from _event_attribute_issues(record)
+
+
+# Tags whose TYPE substructure is required (§3.3).
+_TYPE_REQUIRED_ATTRIBUTES = frozenset({"IDNO", "FACT"})
+
+
+def _event_attribute_issues(record: Individual | Family) -> Iterator[Issue]:
+    for event in record.events:
+        if event.tag == "EVEN":
+            if not event.text:
+                yield Issue("a generic EVEN requires a non-empty text payload")
+            if event.type is None:
+                yield Issue("a generic EVEN requires a TYPE")
+    for attribute in record.attributes:
+        if attribute.tag in _TYPE_REQUIRED_ATTRIBUTES and attribute.type is None:
+            yield Issue(f"{attribute.tag} requires a TYPE")
 
 
 def _family_issues(family: Family, known: set[int]) -> Iterator[Issue]:

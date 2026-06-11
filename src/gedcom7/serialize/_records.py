@@ -8,7 +8,13 @@ from ..enums import Sex, enum_value
 from ..lines import Line
 from ..model import Family, Individual, Submitter
 from ._context import Context
-from ._substructures import contact_lines, personal_name_lines
+from ._substructures import (
+    attribute_lines,
+    contact_lines,
+    event_lines,
+    non_event_lines,
+    personal_name_lines,
+)
 
 
 def submitter_lines(record: Submitter, ctx: Context) -> Iterator[Line]:
@@ -23,6 +29,12 @@ def individual_lines(record: Individual, ctx: Context) -> Iterator[Line]:
         yield from personal_name_lines(name, 1)
     if record.sex is not None:
         yield Line(1, "SEX", enum_value(record.sex, Sex))
+    for attribute in record.attributes:
+        yield from attribute_lines(attribute, 1)
+    for event in record.events:
+        yield from event_lines(event, 1)
+    for non_event in record.non_events:
+        yield from non_event_lines(non_event, 1)
     # Derived family memberships (ADR-0001).
     for family in ctx.families.child_families(record):
         yield Line(1, "FAMC", ctx.table.of(family), is_pointer=True)
@@ -32,6 +44,12 @@ def individual_lines(record: Individual, ctx: Context) -> Iterator[Line]:
 
 def family_lines(record: Family, ctx: Context) -> Iterator[Line]:
     yield Line(0, "FAM", xref=ctx.table.of(record))
+    for attribute in record.attributes:
+        yield from attribute_lines(attribute, 1)
+    for event in record.events:
+        yield from event_lines(event, 1)
+    for non_event in record.non_events:
+        yield from non_event_lines(non_event, 1)
     if record.husband is not None:
         yield Line(1, "HUSB", ctx.table.of(record.husband), is_pointer=True)
     if record.wife is not None:

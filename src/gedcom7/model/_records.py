@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 
 from ..enums import Sex
 from ._pointers import VoidPointer
-from ._substructures import PersonalName
+from ._substructures import Attribute, Event, NonEvent, PersonalName
 
 
 @dataclass
@@ -32,6 +32,9 @@ class Individual:
 
     names: list[PersonalName] = field(default_factory=list)
     sex: Sex | str | None = None
+    attributes: list[Attribute] = field(default_factory=list)
+    events: list[Event] = field(default_factory=list)
+    non_events: list[NonEvent] = field(default_factory=list)
     xref_id: str | None = None
 
 
@@ -48,4 +51,7 @@ class Family:
     husband: Individual | None = None
     wife: Individual | None = None
     children: list[Individual | VoidPointer] = field(default_factory=list)
+    attributes: list[Attribute] = field(default_factory=list)
+    events: list[Event] = field(default_factory=list)
+    non_events: list[NonEvent] = field(default_factory=list)
     xref_id: str | None = None

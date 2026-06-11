@@ -1,6 +1,6 @@
 # 09 — Events + attributes + non-events
 
-Status: needs-triage
+Status: done
 Type: AFK
 
 ## Parent

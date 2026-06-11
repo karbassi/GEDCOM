@@ -8,12 +8,16 @@ from __future__ import annotations
 
 from .model import (
     VOID,
+    Attribute,
     Document,
+    Event,
+    EventDetail,
     Family,
     Header,
     Individual,
     NamePieces,
     NameTranslation,
+    NonEvent,
     PersonalName,
     Submitter,
 )
@@ -22,12 +26,16 @@ from .writer import dump, dumps
 
 __all__ = [
     "VOID",
+    "Attribute",
     "Document",
+    "Event",
+    "EventDetail",
     "Family",
     "Header",
     "Individual",
     "NamePieces",
     "NameTranslation",
+    "NonEvent",
     "PersonalName",
     "Submitter",
     "ValidationError",
