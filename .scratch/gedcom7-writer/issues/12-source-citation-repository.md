@@ -1,6 +1,6 @@
 # 12 — Source + Source Citation + Repository
 
-Status: needs-triage
+Status: done
 Type: AFK
 
 ## Parent

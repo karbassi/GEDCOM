@@ -8,7 +8,17 @@ object identity. ``VOID`` is the deliberate null pointer.
 
 from __future__ import annotations
 
-from .model import VOID, Document, Family, Individual, Record, Submitter, VoidPointer
+from .model import (
+    VOID,
+    Document,
+    Family,
+    Individual,
+    Record,
+    Repository,
+    Source,
+    Submitter,
+    VoidPointer,
+)
 
 __all__ = ["VOID", "VoidPointer", "XrefError", "XrefTable", "build_xref_table"]
 
@@ -16,6 +26,8 @@ __all__ = ["VOID", "VoidPointer", "XrefError", "XrefTable", "build_xref_table"]
 _PREFIXES: list[tuple[type, str]] = [
     (Individual, "I"),
     (Family, "F"),
+    (Source, "S"),
+    (Repository, "R"),
     (Submitter, "U"),
 ]
 

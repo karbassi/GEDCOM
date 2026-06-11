@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from ..enums import NameType, OrdinanceStatus
+from ..enums import MediaType, NameType, OrdinanceStatus
 from ..types import DateExact, DatePeriod, DateValue, Latitude, Longitude, Time
 
 
@@ -87,6 +87,14 @@ class Address:
     state: str | None = None
     postal_code: str | None = None
     country: str | None = None
+
+
+@dataclass
+class CallNumber:
+    """A repository call number (`CALN`) with an optional medium (`MEDI`)."""
+
+    value: str
+    medium: MediaType | str | None = None
 
 
 @dataclass

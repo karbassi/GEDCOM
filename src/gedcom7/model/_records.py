@@ -9,11 +9,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from ..enums import Sex
+from ..enums import Quality, Sex
 from ._pointers import VoidPointer
 from ._substructures import (
     Address,
     Attribute,
+    CallNumber,
     Event,
     Identifier,
     LdsOrdinanceDetail,
@@ -66,6 +67,7 @@ class Individual:
     events: list[Event] = field(default_factory=list)
     non_events: list[NonEvent] = field(default_factory=list)
     lds_ordinances: list[LdsIndividualOrdinance] = field(default_factory=list)
+    source_citations: list[SourceCitation] = field(default_factory=list)
     identifiers: list[Identifier] = field(default_factory=list)
     xref_id: str | None = None
 
@@ -87,5 +89,55 @@ class Family:
     events: list[Event] = field(default_factory=list)
     non_events: list[NonEvent] = field(default_factory=list)
     sealings: list[LdsSpouseSealing] = field(default_factory=list)
+    source_citations: list[SourceCitation] = field(default_factory=list)
     identifiers: list[Identifier] = field(default_factory=list)
     xref_id: str | None = None
+
+
+@dataclass
+class Repository:
+    """An archive or library that holds sources (`REPO`)."""
+
+    name: str
+    address: Address | None = None
+    phones: list[str] = field(default_factory=list)
+    emails: list[str] = field(default_factory=list)
+    faxes: list[str] = field(default_factory=list)
+    web_pages: list[str] = field(default_factory=list)
+    identifiers: list[Identifier] = field(default_factory=list)
+    xref_id: str | None = None
+
+
+@dataclass
+class SourceRepositoryCitation:
+    """A citation from a Source to a Repository (`SOURCE_REPOSITORY_CITATION`)."""
+
+    repository: Repository
+    call_numbers: list[CallNumber] = field(default_factory=list)
+
+
+@dataclass
+class Source:
+    """A citable source of genealogical information (`SOUR`)."""
+
+    author: str | None = None
+    title: str | None = None
+    abbreviation: str | None = None
+    publication: str | None = None
+    text: str | None = None
+    repository_citations: list[SourceRepositoryCitation] = field(default_factory=list)
+    identifiers: list[Identifier] = field(default_factory=list)
+    xref_id: str | None = None
+
+
+@dataclass
+class SourceCitation:
+    """A citation pointing at a Source (`SOURCE_CITATION`).
+
+    ``source`` may be a :data:`VoidPointer` when no Source record exists,
+    with ``page`` describing the whole source.
+    """
+
+    source: Source | VoidPointer
+    page: str | None = None
+    quality: Quality | str | None = None
