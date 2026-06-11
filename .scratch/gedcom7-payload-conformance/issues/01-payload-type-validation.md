@@ -1,6 +1,6 @@
 # 01 — Payload-type validation
 
-Status: ready-for-agent
+Status: done
 Type: AFK
 
 ## Parent

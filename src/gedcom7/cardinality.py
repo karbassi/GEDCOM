@@ -47,6 +47,8 @@ class RuleSet:
     top_level_tags: frozenset[str]
     # (superstructure URI, tag) -> structure URI; "" superstructure = level 0.
     structure_by_super_tag: dict[tuple[str, str], str]
+    # structure URI -> declared payload datatype token (from payloads.tsv).
+    payload_by_structure: dict[str, str]
 
     def rules_for(self, superstructure: str) -> tuple[Rule, ...]:
         return self.by_superstructure.get(superstructure, ())
@@ -54,6 +56,10 @@ class RuleSet:
     def structure_of(self, superstructure: str, tag: str) -> str | None:
         """Resolve the structure URI of ``tag`` under ``superstructure``."""
         return self.structure_by_super_tag.get((superstructure, tag))
+
+    def payload_of(self, structure: str) -> str | None:
+        """The declared payload datatype of ``structure``, if known."""
+        return self.payload_by_structure.get(structure)
 
 
 @dataclass(frozen=True)
@@ -123,6 +129,52 @@ def check_tree(lines: Iterable[tuple[int, str]], rules: RuleSet) -> Iterator[Vio
         yield from finish(stack.pop())
 
 
+@dataclass(frozen=True)
+class PayloadViolation:
+    """A line whose value does not match its declared payload datatype."""
+
+    tag: str
+    payload: str  # the declared datatype token from payloads.tsv
+    value: str | None
+
+    @property
+    def message(self) -> str:
+        if self.payload == "":
+            return f"{self.tag} takes no payload but has a value"
+        return f"{self.tag} requires a non-negative integer but has {self.value!r}"
+
+
+def payload_violations(
+    lines: Iterable[tuple[int, str, str | None]], rules: RuleSet
+) -> Iterator[PayloadViolation]:
+    """Yield payload-type violations for a ``(level, tag, value)`` stream.
+
+    Checks the two datatypes the construction layer does not already guarantee:
+    empty-payload (container) structures must carry no value, and
+    non-negative-integer structures must hold a non-negative integer. Other
+    datatypes (enums, pointers, ``Y|<NULL>``, strings) are model-guaranteed and
+    serve only as a backstop. Unresolved (extension) structures are skipped.
+    """
+    stack: list[tuple[int, str | None]] = []
+    for level, tag, value in lines:
+        while stack and stack[-1][0] >= level:
+            stack.pop()
+        superstructure = "" if not stack else stack[-1][1]
+        structure = (
+            rules.structure_of(superstructure, tag) if superstructure is not None else None
+        )
+        stack.append((level, structure))
+        if structure is None:
+            continue
+        payload = rules.payload_of(structure)
+        if payload is None or value is None:
+            continue
+        empty_with_value = payload == ""
+        bad_integer = "nonNegativeInteger" in payload and not value.isdigit()
+        if empty_with_value or bad_integer:
+            yield PayloadViolation(tag, payload, value)
+
+
 def _parse_cardinality(token: str) -> tuple[int, int | None]:
     """``{0:1}`` -> (0, 1); ``{1:M}`` -> (1, None)."""
     inner = token.strip().removeprefix("{").removesuffix("}")
@@ -133,8 +185,10 @@ def _parse_cardinality(token: str) -> tuple[int, int | None]:
 def build_rules(
     cardinality_rows: Iterable[dict[str, str]],
     substructure_rows: Iterable[dict[str, str]],
+    payload_rows: Iterable[dict[str, str]] = (),
 ) -> RuleSet:
-    """Build a :class:`RuleSet` from the two tables' rows (pure)."""
+    """Build a :class:`RuleSet` from the tables' rows (pure)."""
+    payload_by_structure = {r["structure"]: r["payload"] for r in payload_rows}
     substructure_rows = list(substructure_rows)
     tag_of: dict[tuple[str, str], str] = {
         (r["superstructure"], r["structure"]): r["tag"] for r in substructure_rows
@@ -157,6 +211,7 @@ def build_rules(
         by_superstructure=by_superstructure,
         top_level_tags=top_level,
         structure_by_super_tag=structure_by_super_tag,
+        payload_by_structure=payload_by_structure,
     )
 
 
@@ -169,4 +224,8 @@ def _read(name: str) -> list[dict[str, str]]:
 @cache
 def load_rules() -> RuleSet:
     """Load the :class:`RuleSet` from the packaged spec tables (cached)."""
-    return build_rules(_read("cardinalities.tsv"), _read("substructures.tsv"))
+    return build_rules(
+        _read("cardinalities.tsv"),
+        _read("substructures.tsv"),
+        _read("payloads.tsv"),
+    )

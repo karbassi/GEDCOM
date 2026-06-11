@@ -74,3 +74,26 @@ def test_cardinality_strict_raises_lenient_collects() -> None:
         validate(doc, strict=True)
     messages = validate(doc, strict=False)
     assert any("requires at least 1 FILE" in m for m in messages)
+
+
+def test_payload_validation_flags_non_integer_nchi_via_validate() -> None:
+    from gedcom7 import Attribute
+
+    indi = Individual(names=[PersonalName("X //")], attributes=[Attribute("NCHI", "five")])
+    messages = validate(Document(records=[indi]), strict=False)
+    assert any("NCHI requires a non-negative integer" in m for m in messages)
+
+
+def test_payload_validation_strict_raises() -> None:
+    from gedcom7 import Attribute
+
+    indi = Individual(names=[PersonalName("X //")], attributes=[Attribute("NCHI", "five")])
+    with pytest.raises(ValidationError, match="non-negative integer"):
+        validate(Document(records=[indi]), strict=True)
+
+
+def test_payload_validation_accepts_integer_nchi() -> None:
+    from gedcom7 import Attribute
+
+    indi = Individual(names=[PersonalName("X //")], attributes=[Attribute("NCHI", "3")])
+    assert validate(Document(records=[indi])) == []

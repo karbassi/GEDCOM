@@ -109,7 +109,12 @@ def test_packaged_spec_tables_match_vendored_registry() -> None:
     # The runtime copies under the package must stay byte-identical to the
     # vendored registry so validation can't drift from the documented source.
     packaged = _REGISTRY.parents[0] / "src" / "gedcom7" / "_spec"
-    for name in ("cardinalities.tsv", "substructures.tsv", "extension-structures.tsv"):
+    for name in (
+        "cardinalities.tsv",
+        "substructures.tsv",
+        "extension-structures.tsv",
+        "payloads.tsv",
+    ):
         assert (packaged / name).read_bytes() == (_REGISTRY / name).read_bytes(), (
             f"packaged {name} drifted from registry/{name}"
         )

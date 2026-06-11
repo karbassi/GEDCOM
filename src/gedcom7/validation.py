@@ -16,7 +16,7 @@ from __future__ import annotations
 from collections.abc import Iterator
 from dataclasses import dataclass
 
-from .cardinality import check_tree, load_rules
+from .cardinality import check_tree, load_rules, payload_violations
 from .model import (
     ChildLink,
     Document,
@@ -93,18 +93,21 @@ def _issues(document: Document) -> Iterator[Issue]:
                     is_error=False,
                 )
 
-    yield from _cardinality_issues(document)
+    yield from _structure_issues(document)
 
 
-def _cardinality_issues(document: Document) -> Iterator[Issue]:
-    """Check the emitted structure tree against the spec cardinality rules."""
+def _structure_issues(document: Document) -> Iterator[Issue]:
+    """Check the emitted structure tree against the spec cardinality + payload rules."""
     try:
         lines = list(serialize_document(document, build_xref_table(document)))
     except XrefError:
         return  # reference rules above already report the underlying problem
-    stream = ((line.level, line.tag) for line in lines)
-    for violation in check_tree(stream, load_rules()):
+    rules = load_rules()
+    for violation in check_tree(((line.level, line.tag) for line in lines), rules):
         yield Issue(violation.message)
+    payload_stream = ((line.level, line.tag, line.value) for line in lines)
+    for breach in payload_violations(payload_stream, rules):
+        yield Issue(breach.message)
 
 
 # Tags whose TYPE substructure is required (§3.3).

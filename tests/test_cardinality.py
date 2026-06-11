@@ -2,7 +2,13 @@
 
 from __future__ import annotations
 
-from gedcom7.cardinality import Rule, build_rules, check_tree, load_rules
+from gedcom7.cardinality import (
+    Rule,
+    build_rules,
+    check_tree,
+    load_rules,
+    payload_violations,
+)
 
 V7 = "https://gedcom.io/terms/v7/"
 
@@ -77,3 +83,29 @@ def test_check_tree_skips_unresolved_extension_subtree() -> None:
     # An unknown extension structure and its children are skipped, not flagged.
     stream = [(0, "HEAD"), (1, "GEDC"), (2, "VERS"), (1, "_X"), (2, "_Y")]
     assert list(check_tree(stream, rules)) == []
+
+
+def test_payload_violations_flags_non_integer_nchi() -> None:
+    rules = load_rules()
+    # INDI with an NCHI attribute carrying a non-integer payload.
+    stream = [(0, "INDI", None), (1, "NCHI", "five")]
+    breaches = list(payload_violations(stream, rules))
+    assert any(b.tag == "NCHI" for b in breaches)
+    assert "NCHI requires a non-negative integer but has 'five'" in {b.message for b in breaches}
+
+
+def test_payload_violations_accepts_integer_nchi() -> None:
+    rules = load_rules()
+    assert list(payload_violations([(0, "INDI", None), (1, "NCHI", "3")], rules)) == []
+
+
+def test_payload_violations_flags_value_on_container() -> None:
+    rules = load_rules()
+    # HEAD is an empty-payload (container) structure; a value is a violation.
+    breaches = list(payload_violations([(0, "HEAD", "oops")], rules))
+    assert any(b.tag == "HEAD" and "takes no payload" in b.message for b in breaches)
+
+
+def test_payload_violations_skips_unresolved_extension() -> None:
+    rules = load_rules()
+    assert list(payload_violations([(0, "HEAD", None), (1, "_X", "anything")], rules)) == []
