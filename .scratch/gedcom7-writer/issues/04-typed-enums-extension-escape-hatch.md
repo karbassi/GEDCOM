@@ -1,6 +1,6 @@
 # 04 — Typed enums + extension escape hatch
 
-Status: needs-triage
+Status: done
 Type: AFK
 
 ## Parent
