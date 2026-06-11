@@ -105,6 +105,16 @@ def test_calendar_months_and_epochs_match_registry() -> None:
         )
 
 
+def test_packaged_spec_tables_match_vendored_registry() -> None:
+    # The runtime copies under the package must stay byte-identical to the
+    # vendored registry so validation can't drift from the documented source.
+    packaged = _REGISTRY.parents[0] / "src" / "gedcom7" / "_spec"
+    for name in ("cardinalities.tsv", "substructures.tsv"):
+        assert (packaged / name).read_bytes() == (_REGISTRY / name).read_bytes(), (
+            f"packaged {name} drifted from registry/{name}"
+        )
+
+
 def test_event_tags_have_y_null_payload() -> None:
     # A sampling of standard event tags should carry the [Y|<NULL>] payload.
     payloads: dict[str, str] = {}

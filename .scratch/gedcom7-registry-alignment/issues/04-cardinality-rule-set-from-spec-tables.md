@@ -1,6 +1,6 @@
 # 04 — Cardinality rule set from spec tables
 
-Status: ready-for-agent
+Status: done
 Type: AFK
 
 ## Parent
