@@ -3,24 +3,17 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Protocol, runtime_checkable
 
 from ..types import DateExact, Time
-from ._records import ChangeDate, CreationDate, Submitter
+from ._records import RecordBase, Submitter
 from ._substructures import Note
+
+# A top-level record is anything deriving RecordBase (xref id + metadata).
+Record = RecordBase
 
 
 def _empty_schema() -> dict[str, str]:
     return {}
-
-
-@runtime_checkable
-class Record(Protocol):
-    """A top-level record: an optional xref override and change/creation dates."""
-
-    xref_id: str | None
-    change_date: ChangeDate | None
-    creation_date: CreationDate | None
 
 
 @dataclass

@@ -46,8 +46,22 @@ class CreationDate:
     time: Time | None = None
 
 
+@dataclass(kw_only=True)
+class RecordBase:
+    """Fields common to every top-level record.
+
+    ``xref_id`` is an optional preferred cross-reference id (ADR-0001);
+    ``change_date``/``creation_date`` are the record's metadata. These are
+    keyword-only so they sort after each record's own positional fields.
+    """
+
+    xref_id: str | None = None
+    change_date: ChangeDate | None = None
+    creation_date: CreationDate | None = None
+
+
 @dataclass
-class SharedNote:
+class SharedNote(RecordBase):
     """A reusable note record (`SNOTE`) pointed to by other structures."""
 
     text: str
@@ -56,13 +70,10 @@ class SharedNote:
     translations: list[NoteTranslation] = field(default_factory=list)
     source_citations: list[SourceCitation] = field(default_factory=list)
     identifiers: list[Identifier] = field(default_factory=list)
-    change_date: ChangeDate | None = None
-    creation_date: CreationDate | None = None
-    xref_id: str | None = None
 
 
 @dataclass
-class Multimedia:
+class Multimedia(RecordBase):
     """A record referencing one or more external media files (`OBJE`)."""
 
     files: list[File] = field(default_factory=list)
@@ -70,9 +81,6 @@ class Multimedia:
     notes: list[Note | SharedNote] = field(default_factory=list)
     source_citations: list[SourceCitation] = field(default_factory=list)
     identifiers: list[Identifier] = field(default_factory=list)
-    change_date: ChangeDate | None = None
-    creation_date: CreationDate | None = None
-    xref_id: str | None = None
 
 
 @dataclass
@@ -105,7 +113,7 @@ class LdsSpouseSealing:
 
 
 @dataclass
-class Submitter:
+class Submitter(RecordBase):
     """The contributor of data in the document (`SUBM`)."""
 
     name: str
@@ -117,13 +125,10 @@ class Submitter:
     media_links: list[MultimediaLink] = field(default_factory=list)
     notes: list[Note | SharedNote] = field(default_factory=list)
     identifiers: list[Identifier] = field(default_factory=list)
-    change_date: ChangeDate | None = None
-    creation_date: CreationDate | None = None
-    xref_id: str | None = None
 
 
 @dataclass
-class Individual:
+class Individual(RecordBase):
     """A person (`INDI`)."""
 
     names: list[PersonalName] = field(default_factory=list)
@@ -142,13 +147,10 @@ class Individual:
     source_citations: list[SourceCitation] = field(default_factory=list)
     media_links: list[MultimediaLink] = field(default_factory=list)
     identifiers: list[Identifier] = field(default_factory=list)
-    change_date: ChangeDate | None = None
-    creation_date: CreationDate | None = None
-    xref_id: str | None = None
 
 
 @dataclass
-class Family:
+class Family(RecordBase):
     """A family unit (`FAM`) linking spouses and children.
 
     ``children`` is in birth-chronological order; a :data:`VoidPointer`
@@ -171,13 +173,10 @@ class Family:
     source_citations: list[SourceCitation] = field(default_factory=list)
     media_links: list[MultimediaLink] = field(default_factory=list)
     identifiers: list[Identifier] = field(default_factory=list)
-    change_date: ChangeDate | None = None
-    creation_date: CreationDate | None = None
-    xref_id: str | None = None
 
 
 @dataclass
-class Repository:
+class Repository(RecordBase):
     """An archive or library that holds sources (`REPO`)."""
 
     name: str
@@ -188,9 +187,6 @@ class Repository:
     web_pages: list[str] = field(default_factory=list)
     notes: list[Note | SharedNote] = field(default_factory=list)
     identifiers: list[Identifier] = field(default_factory=list)
-    change_date: ChangeDate | None = None
-    creation_date: CreationDate | None = None
-    xref_id: str | None = None
 
 
 @dataclass
@@ -221,7 +217,7 @@ class SourceData:
 
 
 @dataclass
-class Source:
+class Source(RecordBase):
     """A citable source of genealogical information (`SOUR`)."""
 
     author: str | None = None
@@ -236,9 +232,6 @@ class Source:
     notes: list[Note | SharedNote] = field(default_factory=list)
     media_links: list[MultimediaLink] = field(default_factory=list)
     identifiers: list[Identifier] = field(default_factory=list)
-    change_date: ChangeDate | None = None
-    creation_date: CreationDate | None = None
-    xref_id: str | None = None
 
 
 @dataclass
