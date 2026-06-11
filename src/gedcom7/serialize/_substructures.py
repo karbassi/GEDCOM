@@ -6,8 +6,18 @@ from collections.abc import Iterator
 
 from ..enums import NameType, enum_value
 from ..lines import Line
-from ..model import Attribute, Event, EventDetail, NamePieces, NonEvent, PersonalName
-from ..types import date_value_gedcom
+from ..model import (
+    Address,
+    Attribute,
+    Event,
+    EventDetail,
+    Identifier,
+    NamePieces,
+    NonEvent,
+    PersonalName,
+    Place,
+)
+from ..types import date_value_gedcom, text_list
 
 
 def _name_pieces_lines(pieces: NamePieces, level: int) -> Iterator[Line]:
@@ -55,6 +65,39 @@ def contact_lines(
         yield Line(level, "WWW", www)
 
 
+def place_lines(place: Place, level: int) -> Iterator[Line]:
+    yield Line(level, "PLAC", text_list(place.names))
+    if place.form is not None:
+        yield Line(level + 1, "FORM", text_list(place.form))
+    if place.language is not None:
+        yield Line(level + 1, "LANG", place.language)
+    for tran in place.translations:
+        yield Line(level + 1, "TRAN", text_list(tran.names))
+        yield Line(level + 2, "LANG", tran.language)
+    if place.map is not None:
+        yield Line(level + 1, "MAP")
+        yield Line(level + 2, "LATI", place.map.latitude.gedcom())
+        yield Line(level + 2, "LONG", place.map.longitude.gedcom())
+
+
+def address_lines(address: Address, level: int) -> Iterator[Line]:
+    yield Line(level, "ADDR", address.value)
+    if address.city is not None:
+        yield Line(level + 1, "CITY", address.city)
+    if address.state is not None:
+        yield Line(level + 1, "STAE", address.state)
+    if address.postal_code is not None:
+        yield Line(level + 1, "POST", address.postal_code)
+    if address.country is not None:
+        yield Line(level + 1, "CTRY", address.country)
+
+
+def identifier_lines(identifier: Identifier, level: int) -> Iterator[Line]:
+    yield Line(level, identifier.kind, identifier.value)
+    if identifier.type is not None and identifier.kind in ("REFN", "EXID"):
+        yield Line(level + 1, "TYPE", identifier.type)
+
+
 def event_detail_lines(detail: EventDetail, level: int) -> Iterator[Line]:
     if detail.date is not None:
         yield Line(level, "DATE", date_value_gedcom(detail.date))
@@ -62,6 +105,11 @@ def event_detail_lines(detail: EventDetail, level: int) -> Iterator[Line]:
             yield Line(level + 1, "TIME", detail.date_time.gedcom())
         if detail.date_phrase is not None:
             yield Line(level + 1, "PHRASE", detail.date_phrase)
+    if detail.place is not None:
+        yield from place_lines(detail.place, level)
+    if detail.address is not None:
+        yield from address_lines(detail.address, level)
+    yield from contact_lines(level, detail.phones, detail.emails, detail.faxes, detail.web_pages)
     if detail.agency is not None:
         yield Line(level, "AGNC", detail.agency)
     if detail.religion is not None:

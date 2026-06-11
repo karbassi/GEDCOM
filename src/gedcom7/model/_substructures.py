@@ -7,7 +7,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from ..enums import NameType
-from ..types import DatePeriod, DateValue, Time
+from ..types import DatePeriod, DateValue, Latitude, Longitude, Time
 
 
 @dataclass(frozen=True)
@@ -46,17 +46,76 @@ class PersonalName:
     translations: list[NameTranslation] = field(default_factory=list)
 
 
+@dataclass(frozen=True)
+class Map:
+    """A geographic coordinate (`MAP`); both LATI and LONG are required."""
+
+    latitude: Latitude
+    longitude: Longitude
+
+
+@dataclass
+class PlaceTranslation:
+    """A translated place name (`PLAC.TRAN`); `LANG` is required."""
+
+    names: list[str]
+    language: str
+
+
+@dataclass
+class Place:
+    """A hierarchical place (`PLACE_STRUCTURE`), smallest jurisdiction first."""
+
+    names: list[str]
+    form: list[str] | None = None
+    language: str | None = None
+    translations: list[PlaceTranslation] = field(default_factory=list)
+    map: Map | None = None
+
+
+@dataclass
+class Address:
+    """A mailing address (`ADDRESS_STRUCTURE`).
+
+    ``value`` is the full formatted address (the authoritative ``ADDR``
+    payload, which may be multi-line); the structured fields are optional.
+    The deprecated ``ADR1/ADR2/ADR3`` lines are never emitted.
+    """
+
+    value: str
+    city: str | None = None
+    state: str | None = None
+    postal_code: str | None = None
+    country: str | None = None
+
+
+@dataclass
+class Identifier:
+    """An identifier (`IDENTIFIER_STRUCTURE`): one of ``REFN``, ``UID``, ``EXID``.
+
+    ``type`` is the ``TYPE`` substructure (Text for ``REFN``, URI for
+    ``EXID``); ``UID`` takes no type. Emitting ``EXID`` without a ``type`` is
+    deprecated.
+    """
+
+    kind: str
+    value: str
+    type: str | None = None
+
+
 @dataclass
 class EventDetail:
-    """Shared detail for an event or attribute (`EVENT_DETAIL`).
-
-    Place and address are added in a later slice; this carries the date and
-    a few common single-value fields.
-    """
+    """Shared detail for an event or attribute (`EVENT_DETAIL`)."""
 
     date: DateValue | None = None
     date_time: Time | None = None
     date_phrase: str | None = None
+    place: Place | None = None
+    address: Address | None = None
+    phones: list[str] = field(default_factory=list)
+    emails: list[str] = field(default_factory=list)
+    faxes: list[str] = field(default_factory=list)
+    web_pages: list[str] = field(default_factory=list)
     agency: str | None = None  # AGNC
     religion: str | None = None  # RELI
     cause: str | None = None  # CAUS

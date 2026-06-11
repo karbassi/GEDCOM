@@ -11,7 +11,14 @@ from dataclasses import dataclass, field
 
 from ..enums import Sex
 from ._pointers import VoidPointer
-from ._substructures import Attribute, Event, NonEvent, PersonalName
+from ._substructures import (
+    Address,
+    Attribute,
+    Event,
+    Identifier,
+    NonEvent,
+    PersonalName,
+)
 
 
 @dataclass
@@ -19,10 +26,12 @@ class Submitter:
     """The contributor of data in the document (`SUBM`)."""
 
     name: str
+    address: Address | None = None
     phones: list[str] = field(default_factory=list)
     emails: list[str] = field(default_factory=list)
     faxes: list[str] = field(default_factory=list)
     web_pages: list[str] = field(default_factory=list)
+    identifiers: list[Identifier] = field(default_factory=list)
     xref_id: str | None = None
 
 
@@ -35,6 +44,7 @@ class Individual:
     attributes: list[Attribute] = field(default_factory=list)
     events: list[Event] = field(default_factory=list)
     non_events: list[NonEvent] = field(default_factory=list)
+    identifiers: list[Identifier] = field(default_factory=list)
     xref_id: str | None = None
 
 
@@ -54,4 +64,5 @@ class Family:
     attributes: list[Attribute] = field(default_factory=list)
     events: list[Event] = field(default_factory=list)
     non_events: list[NonEvent] = field(default_factory=list)
+    identifiers: list[Identifier] = field(default_factory=list)
     xref_id: str | None = None

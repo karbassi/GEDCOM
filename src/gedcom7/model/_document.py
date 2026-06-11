@@ -24,6 +24,7 @@ class Header:
     date: DateExact | None = None
     time: Time | None = None
     submitter: Submitter | None = None
+    place_form: list[str] | None = None
     copyright: str | None = None
 
 

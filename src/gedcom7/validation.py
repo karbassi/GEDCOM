@@ -53,6 +53,14 @@ def _issues(document: Document) -> Iterator[Issue]:
         if isinstance(record, Individual | Family):
             yield from _event_attribute_issues(record)
 
+        identifiers = getattr(record, "identifiers", [])
+        for identifier in identifiers:
+            if identifier.kind == "EXID" and identifier.type is None:
+                yield Issue(
+                    "EXID without a TYPE is deprecated (TYPE becomes required in 8.0)",
+                    is_error=False,
+                )
+
 
 # Tags whose TYPE substructure is required (§3.3).
 _TYPE_REQUIRED_ATTRIBUTES = frozenset({"IDNO", "FACT"})

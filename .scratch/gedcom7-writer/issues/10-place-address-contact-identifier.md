@@ -1,6 +1,6 @@
 # 10 — Place / Address / contact / identifier structures
 
-Status: needs-triage
+Status: done
 Type: AFK
 
 ## Parent

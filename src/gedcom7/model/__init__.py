@@ -12,28 +12,38 @@ from ._document import Document, Header, Record
 from ._pointers import VOID, VoidPointer
 from ._records import Family, Individual, Submitter
 from ._substructures import (
+    Address,
     Attribute,
     Event,
     EventDetail,
+    Identifier,
+    Map,
     NamePieces,
     NameTranslation,
     NonEvent,
     PersonalName,
+    Place,
+    PlaceTranslation,
 )
 
 __all__ = [
     "VOID",
+    "Address",
     "Attribute",
     "Document",
     "Event",
     "EventDetail",
     "Family",
     "Header",
+    "Identifier",
     "Individual",
+    "Map",
     "NamePieces",
     "NameTranslation",
     "NonEvent",
     "PersonalName",
+    "Place",
+    "PlaceTranslation",
     "Record",
     "Submitter",
     "VoidPointer",
