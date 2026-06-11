@@ -15,6 +15,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Extension enum values and extension structures (registered and arbitrary) with auto-emitted `HEAD.SCHMA`, plus registered `EXID` type URIs (`ExidType`).
 - Spec-backed cardinality validation and two-tier strict/lenient validation.
 - GEDZIP (`.gdz`) packaging.
-- `gedcom` command-line tool that builds `.ged`/`.gdz` files from a YAML/JSON/TOML authoring document, with agent-friendly `guide`, `schema`, and `--json` surfaces.
+- `gedcom` command-line tool that builds `.ged`/`.gdz` files from a YAML/JSON authoring document, with agent-friendly `guide`, `schema`, and `--json` surfaces.
 
 [Unreleased]: https://github.com/karbassi/GEDCOM/commits/main

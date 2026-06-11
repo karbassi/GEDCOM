@@ -10,7 +10,7 @@ can write what they already know::
     FROM 1920 TO 1930     FROM 1920    TO 1930
     JULIAN 1 MAR 1700     HEBREW 1 TSH 5700     FRENCH_R 1 VEND 1
 
-Native ``date``/``datetime`` values (as YAML/TOML produce them) are accepted
+Native ``date``/``datetime`` values (as YAML produces them) are accepted
 wherever a date is expected.
 """
 

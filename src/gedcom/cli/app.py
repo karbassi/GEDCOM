@@ -53,13 +53,13 @@ def main(argv: list[str] | None = None) -> int:
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="gedcom",
-        description="Build GEDCOM 7 files from a YAML/JSON/TOML authoring document.",
+        description="Build GEDCOM 7 files from a YAML/JSON authoring document.",
     )
     parser.add_argument("--version", action="version", version=f"gedcom {__version__}")
     sub = parser.add_subparsers(dest="command", required=False, metavar="command")
 
     build = sub.add_parser("build", help="build a .ged or .gdz from an authoring document")
-    build.add_argument("input", help="authoring document (.yaml/.yml/.json/.toml)")
+    build.add_argument("input", help="authoring document (.yaml/.yml/.json)")
     build.add_argument(
         "-o",
         "--output",
@@ -76,7 +76,7 @@ def _build_parser() -> argparse.ArgumentParser:
     build.set_defaults(handler=_cmd_build)
 
     check = sub.add_parser("validate", help="check an authoring document without writing output")
-    check.add_argument("input", help="authoring document (.yaml/.yml/.json/.toml)")
+    check.add_argument("input", help="authoring document (.yaml/.yml/.json)")
     check.add_argument("--json", action="store_true", help="emit issues as structured JSON")
     check.set_defaults(handler=_cmd_validate)
 
@@ -84,7 +84,7 @@ def _build_parser() -> argparse.ArgumentParser:
     init.add_argument(
         "-f",
         "--format",
-        choices=("yaml", "toml", "json"),
+        choices=("yaml", "json"),
         default="yaml",
         help="template format (default: yaml)",
     )

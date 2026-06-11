@@ -96,7 +96,7 @@ def test_validate_load_error_exits_2(tmp_path: Path) -> None:
     assert main(["validate", str(src)]) == 2
 
 
-@pytest.mark.parametrize("fmt", ["yaml", "toml", "json"])
+@pytest.mark.parametrize("fmt", ["yaml", "json"])
 def test_init_templates_build(tmp_path: Path, fmt: str) -> None:
     if fmt == "yaml":
         pytest.importorskip("yaml")
@@ -114,10 +114,10 @@ def test_init_to_stdout(capsys: pytest.CaptureFixture[str]) -> None:
 
 
 def test_init_to_file(tmp_path: Path) -> None:
-    out = tmp_path / "tree.toml"
-    assert main(["init", "-f", "toml", "-o", str(out)]) == 0
+    out = tmp_path / "tree.json"
+    assert main(["init", "-f", "json", "-o", str(out)]) == 0
     assert out.exists()
-    assert "[[individuals]]" in out.read_text(encoding="utf-8")
+    assert '"individuals"' in out.read_text(encoding="utf-8")
 
 
 # -- AI-native surface: schema, guide, and structured --json output ----------

@@ -382,10 +382,11 @@ def test_read_document_bad_json(tmp_path: Path) -> None:
         read_document(bad)
 
 
-def test_read_document_bad_toml(tmp_path: Path) -> None:
+def test_read_document_toml_now_unsupported(tmp_path: Path) -> None:
+    # TOML is no longer a supported input format.
     bad = tmp_path / "x.toml"
-    bad.write_text("= = =", encoding="utf-8")
-    with pytest.raises(LoadError, match="invalid TOML"):
+    bad.write_text("individuals = []", encoding="utf-8")
+    with pytest.raises(LoadError, match="unsupported input extension"):
         read_document(bad)
 
 

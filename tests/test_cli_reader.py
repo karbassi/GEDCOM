@@ -12,19 +12,12 @@ from gedcom.cli.errors import LoadError
 from gedcom.cli.reader import read_document
 
 _JSON = '{"individuals": [{"name": "A /B/"}]}'
-_TOML = 'individuals = [{ name = "A /B/" }]'
 _YAML = "individuals:\n  - name: A /B/\n"
 
 
 def test_reads_json(tmp_path: Path) -> None:
     path = tmp_path / "doc.json"
     path.write_text(_JSON, encoding="utf-8")
-    assert read_document(path) == {"individuals": [{"name": "A /B/"}]}
-
-
-def test_reads_toml(tmp_path: Path) -> None:
-    path = tmp_path / "doc.toml"
-    path.write_text(_TOML, encoding="utf-8")
     assert read_document(path) == {"individuals": [{"name": "A /B/"}]}
 
 

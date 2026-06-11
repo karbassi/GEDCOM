@@ -141,7 +141,7 @@ GUIDE = """\
 # Authoring GEDCOM with the `gedcom` CLI
 
 You produce a GEDCOM 7 file from a structured description — you never write
-GEDCOM text by hand. Input is a YAML, JSON, or TOML *authoring document*.
+GEDCOM text by hand. Input is a YAML or JSON *authoring document*.
 
 ## Workflow
 
@@ -158,7 +158,7 @@ GEDCOM text by hand. Input is a YAML, JSON, or TOML *authoring document*.
 - A surname goes between slashes: `John /Smith/`.
 - `FAMS`/`FAMC` back-pointers are DERIVED from `families` — never set them.
 - Dates use GEDCOM forms (`1 JAN 1900`, `ABT 1850`, `BET a AND b`, `FROM a TO b`);
-  native YAML/TOML dates work too.
+  native YAML dates work too.
 - Enums accept the member name (`female`) or the spec value (`F`); a `_`-prefixed
   value passes through as an extension.
 - Every error is located (path + message); with `--json` it is structured as
@@ -172,7 +172,7 @@ def dialect_schema() -> dict[str, Any]:
     """Return the authoring dialect as a JSON-serializable mapping."""
     return {
         "gedcom_version": "7.0",
-        "input_formats": ["yaml", "yml", "json", "toml"],
+        "input_formats": ["yaml", "yml", "json"],
         "sections": [
             {"key": key, "record": tag, "fields": _FIELDS.get(key, {})}
             for key, tag in _SECTION_TAGS.items()
@@ -188,7 +188,7 @@ def dialect_schema() -> dict[str, Any]:
         "exid_types": {member.name.lower(): member.value for member in ExidType},
         "dates": {
             "forms": _DATE_FORMS,
-            "native": "YAML/TOML date and datetime values are accepted",
+            "native": "YAML date and datetime values are accepted",
             "calendars": ["GREGORIAN (default)", "JULIAN", "FRENCH_R", "HEBREW"],
         },
         "references": {
@@ -210,7 +210,7 @@ def schema_json() -> str:
 
 # --- JSON Schema (Draft 2020-12) for the authoring dialect -----------------
 # Editor-time companion to ``validate``: a JSON Schema validates the *parsed*
-# document (YAML/JSON/TOML all parse to the same data model), so editors that
+# document (YAML and JSON parse to the same data model), so editors that
 # speak ``# yaml-language-server: $schema=`` get autocomplete + inline errors,
 # and ``check-jsonschema``/``ajv`` give a fast structural lint. It checks shape,
 # property names, and enum vocabularies; ``gedcom validate`` remains the
@@ -522,7 +522,7 @@ def json_schema() -> dict[str, Any]:
         "$id": "https://gedcom.io/authoring-dialect.schema.json",
         "title": "GEDCOM 7 authoring document",
         "description": (
-            "Structural schema for the gedcom CLI authoring dialect (YAML/JSON/TOML). "
+            "Structural schema for the gedcom CLI authoring dialect (YAML/JSON). "
             "Run `gedcom validate` for cross-reference, date-grammar, and cardinality checks."
         ),
         "type": "object",
