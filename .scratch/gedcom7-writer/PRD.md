@@ -1,6 +1,6 @@
 # PRD: gedcom7 — a GEDCOM 7.0.18 writer for Python
 
-Status: needs-triage
+Status: done
 
 ## Problem Statement
 
