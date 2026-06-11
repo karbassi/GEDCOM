@@ -4,9 +4,10 @@ from __future__ import annotations
 
 from collections.abc import Iterator
 
-from ..enums import Medium, Quality, Sex, enum_value
+from ..enums import Medium, Quality, Restriction, Role, Sex, enum_list, enum_value
 from ..lines import Line
 from ..model import (
+    Association,
     ChangeDate,
     CreationDate,
     Family,
@@ -52,6 +53,27 @@ def _note_lines(notes: list[Note | SharedNote], ctx: Context, level: int) -> Ite
             yield Line(level, "SNOTE", ctx.table.of(note), is_pointer=True)
         else:
             yield from note_lines(note, level)
+
+
+def _restriction_lines(restrictions: list[Restriction | str], level: int) -> Iterator[Line]:
+    if restrictions:
+        yield Line(level, "RESN", enum_list(restrictions, Restriction))
+
+
+def association_lines(assoc: Association, ctx: Context, level: int) -> Iterator[Line]:
+    yield Line(level, "ASSO", ctx.table.resolve(assoc.person), is_pointer=True)
+    if assoc.phrase is not None:
+        yield Line(level + 1, "PHRASE", assoc.phrase)
+    yield Line(level + 1, "ROLE", enum_value(assoc.role, Role))
+    if assoc.role_phrase is not None:
+        yield Line(level + 2, "PHRASE", assoc.role_phrase)
+    yield from _note_lines(assoc.notes, ctx, level + 1)
+    yield from _source_citations(assoc.source_citations, ctx, level + 1)
+
+
+def _associations(assocs: list[Association], ctx: Context, level: int) -> Iterator[Line]:
+    for assoc in assocs:
+        yield from association_lines(assoc, ctx, level)
 
 
 def meta_lines(
@@ -123,6 +145,7 @@ def _media_links(links: list[MultimediaLink], ctx: Context, level: int) -> Itera
 
 def multimedia_lines(record: Multimedia, ctx: Context) -> Iterator[Line]:
     yield Line(0, "OBJE", xref=ctx.table.of(record))
+    yield from _restriction_lines(record.restrictions, 1)
     for file in record.files:
         yield from file_lines(file, 1)
     yield from _identifier_lines(record.identifiers, 1)
@@ -175,6 +198,7 @@ def submitter_lines(record: Submitter, ctx: Context) -> Iterator[Line]:
 
 def individual_lines(record: Individual, ctx: Context) -> Iterator[Line]:
     yield Line(0, "INDI", xref=ctx.table.of(record))
+    yield from _restriction_lines(record.restrictions, 1)
     for name in record.names:
         yield from personal_name_lines(name, 1)
     if record.sex is not None:
@@ -192,6 +216,7 @@ def individual_lines(record: Individual, ctx: Context) -> Iterator[Line]:
         yield Line(1, "FAMC", ctx.table.of(family), is_pointer=True)
     for family in ctx.families.spouse_families(record):
         yield Line(1, "FAMS", ctx.table.of(family), is_pointer=True)
+    yield from _associations(record.associations, ctx, 1)
     yield from _note_lines(record.notes, ctx, 1)
     yield from _identifier_lines(record.identifiers, 1)
     yield from _source_citations(record.source_citations, ctx, 1)
@@ -200,6 +225,7 @@ def individual_lines(record: Individual, ctx: Context) -> Iterator[Line]:
 
 def family_lines(record: Family, ctx: Context) -> Iterator[Line]:
     yield Line(0, "FAM", xref=ctx.table.of(record))
+    yield from _restriction_lines(record.restrictions, 1)
     for attribute in record.attributes:
         yield from attribute_lines(attribute, 1)
     for event in record.events:
@@ -214,6 +240,7 @@ def family_lines(record: Family, ctx: Context) -> Iterator[Line]:
         yield Line(1, "CHIL", ctx.table.resolve(child), is_pointer=True)
     for sealing in record.sealings:
         yield from _sealing_lines(sealing, 1)
+    yield from _associations(record.associations, ctx, 1)
     yield from _note_lines(record.notes, ctx, 1)
     yield from _identifier_lines(record.identifiers, 1)
     yield from _source_citations(record.source_citations, ctx, 1)

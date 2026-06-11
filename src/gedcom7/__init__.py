@@ -9,6 +9,7 @@ from __future__ import annotations
 from .model import (
     VOID,
     Address,
+    Association,
     Attribute,
     CallNumber,
     ChangeDate,
@@ -50,6 +51,7 @@ from .writer import dump, dumps
 __all__ = [
     "VOID",
     "Address",
+    "Association",
     "Attribute",
     "CallNumber",
     "ChangeDate",

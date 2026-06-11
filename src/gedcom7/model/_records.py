@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from ..enums import Quality, Sex
+from ..enums import Quality, Restriction, Role, Sex
 from ..types import DateExact, Time
 from ._pointers import VoidPointer
 from ._substructures import (
@@ -64,6 +64,7 @@ class Multimedia:
     """A record referencing one or more external media files (`OBJE`)."""
 
     files: list[File] = field(default_factory=list)
+    restrictions: list[Restriction | str] = field(default_factory=list)
     identifiers: list[Identifier] = field(default_factory=list)
     change_date: ChangeDate | None = None
     creation_date: CreationDate | None = None
@@ -121,10 +122,12 @@ class Individual:
 
     names: list[PersonalName] = field(default_factory=list)
     sex: Sex | str | None = None
+    restrictions: list[Restriction | str] = field(default_factory=list)
     attributes: list[Attribute] = field(default_factory=list)
     events: list[Event] = field(default_factory=list)
     non_events: list[NonEvent] = field(default_factory=list)
     lds_ordinances: list[LdsIndividualOrdinance] = field(default_factory=list)
+    associations: list[Association] = field(default_factory=list)
     notes: list[Note | SharedNote] = field(default_factory=list)
     source_citations: list[SourceCitation] = field(default_factory=list)
     media_links: list[MultimediaLink] = field(default_factory=list)
@@ -147,10 +150,12 @@ class Family:
     husband: Individual | None = None
     wife: Individual | None = None
     children: list[Individual | VoidPointer] = field(default_factory=list)
+    restrictions: list[Restriction | str] = field(default_factory=list)
     attributes: list[Attribute] = field(default_factory=list)
     events: list[Event] = field(default_factory=list)
     non_events: list[NonEvent] = field(default_factory=list)
     sealings: list[LdsSpouseSealing] = field(default_factory=list)
+    associations: list[Association] = field(default_factory=list)
     notes: list[Note | SharedNote] = field(default_factory=list)
     source_citations: list[SourceCitation] = field(default_factory=list)
     media_links: list[MultimediaLink] = field(default_factory=list)
@@ -211,3 +216,19 @@ class SourceCitation:
     source: Source | VoidPointer
     page: str | None = None
     quality: Quality | str | None = None
+
+
+@dataclass
+class Association:
+    """A relationship to another individual (`ASSOCIATION_STRUCTURE`).
+
+    ``person`` may be a :data:`VoidPointer` (with ``phrase`` describing
+    someone not in any record). ``role`` is required.
+    """
+
+    person: Individual | VoidPointer
+    role: Role | str
+    phrase: str | None = None
+    role_phrase: str | None = None
+    notes: list[Note | SharedNote] = field(default_factory=list)
+    source_citations: list[SourceCitation] = field(default_factory=list)
