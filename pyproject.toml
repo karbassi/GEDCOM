@@ -38,7 +38,7 @@ packages = ["src/gedcom"]
 python-preference = "only-system"
 
 [dependency-groups]
-dev = ["pytest>=8", "mypy>=1.11", "ruff>=0.6", "pyyaml>=6", "types-pyyaml>=6"]
+dev = ["pytest>=8", "mypy>=1.11", "ruff>=0.6", "pyyaml>=6", "types-pyyaml>=6", "coverage[toml]>=7"]
 
 [tool.ruff]
 target-version = "py312"
@@ -74,3 +74,11 @@ enable_error_code = ["redundant-expr", "truthy-bool", "ignore-without-code"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra"
+
+[tool.coverage.run]
+source = ["gedcom"]
+
+[tool.coverage.report]
+fail_under = 100
+show_missing = true
+exclude_also = ["pragma: no cover", "if TYPE_CHECKING:", "raise NotImplementedError"]

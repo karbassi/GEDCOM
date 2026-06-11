@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#MISE description="Run lint, typecheck, and tests (the full gate)"
-#MISE depends=["lint", "typecheck", "test"]
+#MISE description="Run lint, typecheck, and tests under 100% coverage (the full gate)"
+#MISE depends=["lint", "typecheck", "cov"]
 set -euo pipefail
 echo "All checks passed."

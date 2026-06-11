@@ -1034,8 +1034,8 @@ def _parse_age(text: str) -> Age:
         if len(token) < 2 or token[-1] not in suffixes or not token[:-1].isdigit():
             raise LoadError(f"{token!r} in age {text!r} is not a count like '72y'")
         units[suffixes[token[-1]]] = int(token[:-1])
-    if not units and bound is None:
-        raise LoadError(f"{text!r} is not a valid age")
+    if not units and bound is None:  # pragma: no cover - defensive; the loop above
+        raise LoadError(f"{text!r} is not a valid age")  # raises or fills a unit first
     return Age(
         years=units.get("years"),
         months=units.get("months"),

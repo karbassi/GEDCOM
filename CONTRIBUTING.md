@@ -22,15 +22,18 @@ If you prefer not to use mise, any Python 3.12+ with `uv sync` works; the mise t
 The full gate is lint + typecheck + tests. Run it before opening a PR:
 
 ```sh
-mise run check       # lint, typecheck, and tests (the full gate)
+mise run check       # lint, typecheck, and tests under 100% coverage (the full gate)
 
 mise run lint        # ruff check (no fixes)
 mise run typecheck   # mypy (strict)
 mise run test        # pytest — extra args pass through, e.g. mise run test -k cli
+mise run cov         # pytest under coverage; fails under 100%
 mise run fmt         # ruff format + lint autofixes
 ```
 
-Equivalent without mise: `uv run ruff check .`, `uv run mypy`, `uv run pytest`.
+Equivalent without mise: `uv run python -m ruff check .`, `uv run python -m mypy`, `uv run python -m pytest`.
+
+The suite holds **100% line coverage** of `src/gedcom`, enforced by `mise run cov` (and therefore `mise run check`). New code needs tests that keep it there; genuinely unreachable defensive branches may be marked `# pragma: no cover` with a one-line reason.
 
 ## Conventions
 
