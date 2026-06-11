@@ -1,6 +1,6 @@
 # 02 — EXID type URI constants (ExidType)
 
-Status: ready-for-agent
+Status: done
 Type: AFK
 
 ## Parent

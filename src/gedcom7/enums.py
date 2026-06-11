@@ -129,6 +129,32 @@ class OrdinanceStatus(StrEnum):
     UNCLEARED = "UNCLEARED"
 
 
+class ExidType(StrEnum):
+    """Registered ``EXID``.``TYPE`` authority URIs (`uri/exid-types`).
+
+    `EXID` without a `TYPE` is deprecated; these are the registered
+    external-identifier authorities, each value the exact registry URI.
+    Unregistered authorities may still pass a raw URI string.
+    """
+
+    AFN = "https://gedcom.io/terms/v7/AFN"
+    BILLIONGRAVES_CEMETERY_ID = "https://www.billiongraves.com/cemetery/name/"
+    BILLIONGRAVES_GRAVE_ID = "https://www.billiongraves.com/grave/name/"
+    FAMILYSEARCH_MEMORY_ID = "https://gedcom.io/exid-type/FamilySearch-MemoryId"
+    FAMILYSEARCH_PERSON_ID = "https://gedcom.io/exid-type/FamilySearch-PersonId"
+    FAMILYSEARCH_PLACE_ID = "https://gedcom.io/exid-type/FamilySearch-PlaceId"
+    FAMILYSEARCH_SOURCE_DESCRIPTION_ID = (
+        "https://gedcom.io/exid-type/FamilySearch-SourceDescriptionId"
+    )
+    FAMILYSEARCH_USER_ID = "https://gedcom.io/exid-type/FamilySearch-UserId"
+    FINDAGRAVE_CEMETERY_ID = "https://www.findagrave.com/cemetery/"
+    FINDAGRAVE_MEMORIAL_ID = "https://www.findagrave.com/memorial/"
+    GOV_ID = "https://gov.genealogy.net/"
+    RFN = "https://gedcom.io/terms/v7/RFN"
+    RIN = "https://gedcom.io/terms/v7/RIN"
+    WIKITREE_PERSON_ID = "https://www.wikitree.com/wiki/"
+
+
 def enum_value[E: StrEnum](value: E | str, enum_cls: type[E]) -> str:
     """Resolve an enum member or a `_`-prefixed extension string to its payload.
 

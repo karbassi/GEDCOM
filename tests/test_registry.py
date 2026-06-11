@@ -11,6 +11,7 @@ from pathlib import Path
 
 from gedcom7.enums import (
     AdoptingParent,
+    ExidType,
     FamcStatus,
     Medium,
     NameType,
@@ -68,6 +69,17 @@ def test_every_mapped_set_exists_upstream() -> None:
     registry = _registry_sets()
     for set_tag in _ENUM_SETS:
         assert set_tag in registry, f"enumset {set_tag} no longer in the registry"
+
+
+def _registry_exid_uris() -> set[str]:
+    with (_REGISTRY / "exid-types.tsv").open(encoding="utf-8") as handle:
+        reader = csv.DictReader(handle, delimiter="\t")
+        return {row["uri"] for row in reader}
+
+
+def test_exid_types_match_registry_exactly() -> None:
+    ours = {member.value for member in ExidType}
+    assert ours == _registry_exid_uris(), "ExidType drifted from uri/exid-types"
 
 
 def test_event_tags_have_y_null_payload() -> None:

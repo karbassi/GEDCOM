@@ -142,7 +142,7 @@ def note_lines(note: Note, level: int) -> Iterator[Line]:
 def identifier_lines(identifier: Identifier, level: int) -> Iterator[Line]:
     yield Line(level, identifier.kind, identifier.value)
     if identifier.type is not None and identifier.kind in ("REFN", "EXID"):
-        yield Line(level + 1, "TYPE", identifier.type)
+        yield Line(level + 1, "TYPE", str(identifier.type))
 
 
 def event_detail_lines(detail: EventDetail, level: int) -> Iterator[Line]:

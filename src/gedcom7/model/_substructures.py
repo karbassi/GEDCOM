@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from ..enums import Medium, NameType, OrdinanceStatus
+from ..enums import ExidType, Medium, NameType, OrdinanceStatus
 from ..types import DateExact, DatePeriod, DateValue, Latitude, Longitude, Time
 
 
@@ -154,12 +154,13 @@ class Identifier:
 
     ``type`` is the ``TYPE`` substructure (Text for ``REFN``, URI for
     ``EXID``); ``UID`` takes no type. Emitting ``EXID`` without a ``type`` is
-    deprecated.
+    deprecated. For ``EXID`` prefer an :class:`~gedcom7.enums.ExidType` (a
+    registered authority URI); a raw URI string is also accepted.
     """
 
     kind: str
     value: str
-    type: str | None = None
+    type: str | ExidType | None = None
 
 
 @dataclass
