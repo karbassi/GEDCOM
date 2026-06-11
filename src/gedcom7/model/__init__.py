@@ -8,9 +8,10 @@ objects live in :mod:`gedcom7.types`.
 
 from __future__ import annotations
 
-from ._document import Document, Header, Record
+from ._document import Document, Header, HeaderSource, Record
 from ._pointers import VOID, VoidPointer
 from ._records import (
+    Alias,
     Association,
     ChangeDate,
     CreationDate,
@@ -54,6 +55,7 @@ from ._substructures import (
 __all__ = [
     "VOID",
     "Address",
+    "Alias",
     "Association",
     "Attribute",
     "CallNumber",
@@ -67,6 +69,7 @@ __all__ = [
     "File",
     "FileTranslation",
     "Header",
+    "HeaderSource",
     "Identifier",
     "Individual",
     "LdsIndividualOrdinance",

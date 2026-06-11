@@ -8,6 +8,7 @@ from ..lines import Line
 from ..model import Header
 from ..types import text_list
 from ._context import Context
+from ._substructures import note_lines
 
 
 def header_lines(
@@ -20,14 +21,28 @@ def header_lines(
         yield Line(1, "SCHMA")
         for tag, uri in schema_entries:
             yield Line(2, "TAG", f"{tag} {uri}")
+    if header.source is not None:
+        yield Line(1, "SOUR", header.source.product)
+        if header.source.version is not None:
+            yield Line(2, "VERS", header.source.version)
+        if header.source.name is not None:
+            yield Line(2, "NAME", header.source.name)
+        if header.source.corporation is not None:
+            yield Line(2, "CORP", header.source.corporation)
+    if header.destination is not None:
+        yield Line(1, "DEST", header.destination)
     if header.date is not None:
         yield Line(1, "DATE", header.date.gedcom())
         if header.time is not None:
             yield Line(2, "TIME", header.time.gedcom())
     if header.submitter is not None:
         yield Line(1, "SUBM", ctx.table.of(header.submitter), is_pointer=True)
+    if header.copyright is not None:
+        yield Line(1, "COPR", header.copyright)
+    if header.language is not None:
+        yield Line(1, "LANG", header.language)
     if header.place_form is not None:
         yield Line(1, "PLAC")
         yield Line(2, "FORM", text_list(header.place_form))
-    if header.copyright is not None:
-        yield Line(1, "COPR", header.copyright)
+    if header.note is not None:
+        yield from note_lines(header.note, 1)

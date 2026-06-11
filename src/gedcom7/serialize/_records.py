@@ -265,6 +265,16 @@ def individual_lines(record: Individual, ctx: Context) -> Iterator[Line]:
     for family in ctx.families.spouse_families(record):
         yield Line(1, "FAMS", ctx.table.of(family), is_pointer=True)
     yield from _associations(record.associations, ctx, 1)
+    for submitter in record.submitters:
+        yield Line(1, "SUBM", ctx.table.of(submitter), is_pointer=True)
+    for alias in record.aliases:
+        yield Line(1, "ALIA", ctx.table.of(alias.individual), is_pointer=True)
+        if alias.phrase is not None:
+            yield Line(2, "PHRASE", alias.phrase)
+    for submitter in record.ancestor_interest:
+        yield Line(1, "ANCI", ctx.table.of(submitter), is_pointer=True)
+    for submitter in record.descendant_interest:
+        yield Line(1, "DESI", ctx.table.of(submitter), is_pointer=True)
     yield from _note_lines(record.notes, ctx, 1)
     yield from _identifier_lines(record.identifiers, 1)
     yield from _source_citations(record.source_citations, ctx, 1)
@@ -289,6 +299,8 @@ def family_lines(record: Family, ctx: Context) -> Iterator[Line]:
     for sealing in record.sealings:
         yield from _sealing_lines(sealing, 1)
     yield from _associations(record.associations, ctx, 1)
+    for submitter in record.submitters:
+        yield Line(1, "SUBM", ctx.table.of(submitter), is_pointer=True)
     yield from _note_lines(record.notes, ctx, 1)
     yield from _identifier_lines(record.identifiers, 1)
     yield from _source_citations(record.source_citations, ctx, 1)

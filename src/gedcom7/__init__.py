@@ -9,6 +9,7 @@ from __future__ import annotations
 from .model import (
     VOID,
     Address,
+    Alias,
     Association,
     Attribute,
     CallNumber,
@@ -22,6 +23,7 @@ from .model import (
     File,
     FileTranslation,
     Header,
+    HeaderSource,
     Identifier,
     Individual,
     LdsIndividualOrdinance,
@@ -53,6 +55,7 @@ from .writer import dump, dumps
 __all__ = [
     "VOID",
     "Address",
+    "Alias",
     "Association",
     "Attribute",
     "CallNumber",
@@ -66,6 +69,7 @@ __all__ = [
     "File",
     "FileTranslation",
     "Header",
+    "HeaderSource",
     "Identifier",
     "Individual",
     "LdsIndividualOrdinance",

@@ -134,6 +134,10 @@ class Individual:
     non_events: list[NonEvent] = field(default_factory=list)
     lds_ordinances: list[LdsIndividualOrdinance] = field(default_factory=list)
     associations: list[Association] = field(default_factory=list)
+    submitters: list[Submitter] = field(default_factory=list)
+    aliases: list[Alias] = field(default_factory=list)
+    ancestor_interest: list[Submitter] = field(default_factory=list)
+    descendant_interest: list[Submitter] = field(default_factory=list)
     notes: list[Note | SharedNote] = field(default_factory=list)
     source_citations: list[SourceCitation] = field(default_factory=list)
     media_links: list[MultimediaLink] = field(default_factory=list)
@@ -162,6 +166,7 @@ class Family:
     non_events: list[NonEvent] = field(default_factory=list)
     sealings: list[LdsSpouseSealing] = field(default_factory=list)
     associations: list[Association] = field(default_factory=list)
+    submitters: list[Submitter] = field(default_factory=list)
     notes: list[Note | SharedNote] = field(default_factory=list)
     source_citations: list[SourceCitation] = field(default_factory=list)
     media_links: list[MultimediaLink] = field(default_factory=list)
@@ -271,3 +276,11 @@ class Association:
     role_phrase: str | None = None
     notes: list[Note | SharedNote] = field(default_factory=list)
     source_citations: list[SourceCitation] = field(default_factory=list)
+
+
+@dataclass
+class Alias:
+    """An alternate self of an individual (`ALIA`)."""
+
+    individual: Individual
+    phrase: str | None = None
