@@ -285,7 +285,7 @@ class _Builder:
             self._fill_multimedia(record, node)
         elif isinstance(record, SharedNote):
             self._fill_shared_note(record, node)
-        elif isinstance(record, Submitter):
+        elif isinstance(record, Submitter):  # pragma: no branch - exhaustive over made records
             self._fill_submitter(record, node)
         self._fill_metadata(record, node)
 

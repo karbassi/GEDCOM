@@ -397,7 +397,7 @@ def _populate_record(record: Record, node: Node, resolver: Resolver) -> None:
         _populate_repository(record, node, resolver)
     elif isinstance(record, Submitter):
         _populate_submitter(record, node, resolver)
-    elif isinstance(record, SharedNote):
+    elif isinstance(record, SharedNote):  # pragma: no branch - exhaustive over made records
         _populate_shared_note(record, node, resolver)
     record.extensions = [
         parse_extension_structure(c, resolver) for c in node.children if c.tag.startswith("_")
