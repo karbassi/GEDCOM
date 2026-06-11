@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#MISE description="Run the test suite (extra args pass through to pytest)"
+set -euo pipefail
+uv run pytest "$@"

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#MISE description="Sync the project venv and dev dependencies via uv"
+set -euo pipefail
+uv sync

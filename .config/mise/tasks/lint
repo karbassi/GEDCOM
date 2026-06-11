@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#MISE description="Lint with ruff (no fixes)"
+set -euo pipefail
+uv run ruff check .

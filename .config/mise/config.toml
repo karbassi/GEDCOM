@@ -1,0 +1,14 @@
+# mise manages the runtimes and is the task runner; uv manages the venv,
+# dependencies, and the build. Tasks live in .config/mise/tasks/.
+
+[tools]
+python = ["3.12", "3.13", "3.14"]
+uv = "latest"
+
+[env]
+# Make uv use the mise-provided interpreters instead of downloading its own.
+UV_PYTHON_PREFERENCE = "only-system"
+
+[settings]
+# Allow the file tasks under .config/mise/tasks/ to run.
+experimental = true

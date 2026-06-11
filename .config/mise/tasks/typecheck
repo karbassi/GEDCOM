@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#MISE description="Type-check with mypy (strict)"
+set -euo pipefail
+uv run mypy
