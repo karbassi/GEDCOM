@@ -1,6 +1,6 @@
 # 03 — Structure coverage audit
 
-Status: ready-for-agent
+Status: done
 Type: AFK
 
 ## Parent

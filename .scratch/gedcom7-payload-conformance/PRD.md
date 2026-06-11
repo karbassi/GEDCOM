@@ -1,6 +1,6 @@
 # PRD: gedcom7 — payload & structure conformance
 
-Status: needs-triage
+Status: done
 
 ## Problem Statement
 

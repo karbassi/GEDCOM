@@ -21,11 +21,7 @@ def _indi(**kw: object) -> Individual:
 
 def test_childlink_emits_pedi_and_stat_on_derived_famc() -> None:
     bob = _indi()
-    fam = Family(
-        children=[
-            ChildLink(bob, pedigree=Pedigree.ADOPTED, status=FamcStatus.PROVEN)
-        ]
-    )
+    fam = Family(children=[ChildLink(bob, pedigree=Pedigree.ADOPTED, status=FamcStatus.PROVEN)])
     out = dumps(Document(records=[bob, fam]))
     famc = out[out.index("0 @I1@ INDI") :]
     assert "1 FAMC @F1@\n2 PEDI ADOPTED\n2 STAT PROVEN\n" in famc
@@ -35,9 +31,7 @@ def test_childlink_emits_pedi_and_stat_on_derived_famc() -> None:
 
 def test_childlink_pedigree_phrase() -> None:
     bob = _indi()
-    fam = Family(
-        children=[ChildLink(bob, pedigree=Pedigree.OTHER, pedigree_phrase="donor")]
-    )
+    fam = Family(children=[ChildLink(bob, pedigree=Pedigree.OTHER, pedigree_phrase="donor")])
     out = dumps(Document(records=[bob, fam]))
     assert "1 FAMC @F1@\n2 PEDI OTHER\n3 PHRASE donor\n" in out
 
@@ -57,9 +51,7 @@ def test_event_level_famc_on_adoption() -> None:
         events=[
             Event(
                 "ADOP",
-                detail=EventDetail(
-                    family_child=fam, adopting_parent=AdoptingParent.BOTH
-                ),
+                detail=EventDetail(family_child=fam, adopting_parent=AdoptingParent.BOTH),
             )
         ]
     )

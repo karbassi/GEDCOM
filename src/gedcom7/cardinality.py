@@ -160,9 +160,7 @@ def payload_violations(
         while stack and stack[-1][0] >= level:
             stack.pop()
         superstructure = "" if not stack else stack[-1][1]
-        structure = (
-            rules.structure_of(superstructure, tag) if superstructure is not None else None
-        )
+        structure = rules.structure_of(superstructure, tag) if superstructure is not None else None
         stack.append((level, structure))
         if structure is None:
             continue
