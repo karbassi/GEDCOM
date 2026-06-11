@@ -10,10 +10,16 @@ from ..types import text_list
 from ._context import Context
 
 
-def header_lines(header: Header, ctx: Context) -> Iterator[Line]:
+def header_lines(
+    header: Header, ctx: Context, schema_entries: list[tuple[str, str]]
+) -> Iterator[Line]:
     yield Line(0, "HEAD")
     yield Line(1, "GEDC")
     yield Line(2, "VERS", header.gedcom_version)
+    if schema_entries:
+        yield Line(1, "SCHMA")
+        for tag, uri in schema_entries:
+            yield Line(2, "TAG", f"{tag} {uri}")
     if header.date is not None:
         yield Line(1, "DATE", header.date.gedcom())
         if header.time is not None:

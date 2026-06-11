@@ -1,6 +1,6 @@
 # 15 — Extension enum values + auto-emitted HEAD.SCHMA
 
-Status: needs-triage
+Status: done
 Type: AFK
 
 ## Parent

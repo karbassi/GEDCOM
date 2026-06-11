@@ -9,6 +9,10 @@ from ..types import DateExact, Time
 from ._records import Submitter
 
 
+def _empty_schema() -> dict[str, str]:
+    return {}
+
+
 @runtime_checkable
 class Record(Protocol):
     """A top-level record: it carries an optional xref override (ADR-0001)."""
@@ -26,6 +30,9 @@ class Header:
     submitter: Submitter | None = None
     place_form: list[str] | None = None
     copyright: str | None = None
+    # Extension identifier (tag or enum value, ``_``-prefixed) → URI. A
+    # SCHMA block is auto-emitted for the entries actually used (§1.5).
+    schema: dict[str, str] = field(default_factory=_empty_schema)
 
 
 @dataclass

@@ -55,12 +55,24 @@ def _record_lines(record: Record, ctx: Context) -> Iterator[Line]:
         raise TypeError(f"no serializer for record type {type(record).__name__}")
 
 
+def _used_schema_entries(body: list[Line], schema: dict[str, str]) -> list[tuple[str, str]]:
+    """Find declared extension identifiers actually used, sorted for stability."""
+    used: set[str] = set()
+    for line in body:
+        if line.tag in schema:
+            used.add(line.tag)
+        if line.value is not None and line.value in schema:
+            used.add(line.value)
+    return [(identifier, schema[identifier]) for identifier in sorted(used)]
+
+
 def serialize_document(document: Document, table: XrefTable) -> Iterator[Line]:
     """Yield the logical lines for a whole document, in document order."""
     ctx = Context(table=table, families=build_family_index(document))
-    yield from header_lines(document.header, ctx)
-    for record in document.records:
-        yield from _record_lines(record, ctx)
+    body = [line for record in document.records for line in _record_lines(record, ctx)]
+    schema_entries = _used_schema_entries(body, document.header.schema)
+    yield from header_lines(document.header, ctx, schema_entries)
+    yield from body
     yield Line(0, "TRLR")
 
 
