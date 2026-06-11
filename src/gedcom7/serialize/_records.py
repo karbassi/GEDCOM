@@ -7,6 +7,8 @@ from collections.abc import Iterator
 from ..enums import Medium, Quality, Sex, enum_value
 from ..lines import Line
 from ..model import (
+    ChangeDate,
+    CreationDate,
     Family,
     Identifier,
     Individual,
@@ -50,6 +52,22 @@ def _note_lines(notes: list[Note | SharedNote], ctx: Context, level: int) -> Ite
             yield Line(level, "SNOTE", ctx.table.of(note), is_pointer=True)
         else:
             yield from note_lines(note, level)
+
+
+def meta_lines(
+    change_date: ChangeDate | None, creation_date: CreationDate | None, ctx: Context
+) -> Iterator[Line]:
+    if change_date is not None:
+        yield Line(1, "CHAN")
+        yield Line(2, "DATE", change_date.date.gedcom())
+        if change_date.time is not None:
+            yield Line(3, "TIME", change_date.time.gedcom())
+        yield from _note_lines(change_date.notes, ctx, 2)
+    if creation_date is not None:
+        yield Line(1, "CREA")
+        yield Line(2, "DATE", creation_date.date.gedcom())
+        if creation_date.time is not None:
+            yield Line(3, "TIME", creation_date.time.gedcom())
 
 
 def shared_note_lines(record: SharedNote, ctx: Context) -> Iterator[Line]:

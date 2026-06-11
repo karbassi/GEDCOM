@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from typing import Protocol, runtime_checkable
 
 from ..types import DateExact, Time
-from ._records import Submitter
+from ._records import ChangeDate, CreationDate, Submitter
 
 
 def _empty_schema() -> dict[str, str]:
@@ -15,9 +15,11 @@ def _empty_schema() -> dict[str, str]:
 
 @runtime_checkable
 class Record(Protocol):
-    """A top-level record: it carries an optional xref override (ADR-0001)."""
+    """A top-level record: an optional xref override and change/creation dates."""
 
     xref_id: str | None
+    change_date: ChangeDate | None
+    creation_date: CreationDate | None
 
 
 @dataclass

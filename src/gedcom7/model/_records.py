@@ -10,6 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from ..enums import Quality, Sex
+from ..types import DateExact, Time
 from ._pointers import VoidPointer
 from ._substructures import (
     Address,
@@ -28,6 +29,23 @@ from ._substructures import (
 
 
 @dataclass
+class ChangeDate:
+    """When a record was last changed (`CHANGE_DATE`)."""
+
+    date: DateExact
+    time: Time | None = None
+    notes: list[Note | SharedNote] = field(default_factory=list)
+
+
+@dataclass
+class CreationDate:
+    """When a record was created (`CREATION_DATE`); not updated thereafter."""
+
+    date: DateExact
+    time: Time | None = None
+
+
+@dataclass
 class SharedNote:
     """A reusable note record (`SNOTE`) pointed to by other structures."""
 
@@ -36,6 +54,8 @@ class SharedNote:
     language: str | None = None
     translations: list[NoteTranslation] = field(default_factory=list)
     identifiers: list[Identifier] = field(default_factory=list)
+    change_date: ChangeDate | None = None
+    creation_date: CreationDate | None = None
     xref_id: str | None = None
 
 
@@ -45,6 +65,8 @@ class Multimedia:
 
     files: list[File] = field(default_factory=list)
     identifiers: list[Identifier] = field(default_factory=list)
+    change_date: ChangeDate | None = None
+    creation_date: CreationDate | None = None
     xref_id: str | None = None
 
 
@@ -88,6 +110,8 @@ class Submitter:
     faxes: list[str] = field(default_factory=list)
     web_pages: list[str] = field(default_factory=list)
     identifiers: list[Identifier] = field(default_factory=list)
+    change_date: ChangeDate | None = None
+    creation_date: CreationDate | None = None
     xref_id: str | None = None
 
 
@@ -105,6 +129,8 @@ class Individual:
     source_citations: list[SourceCitation] = field(default_factory=list)
     media_links: list[MultimediaLink] = field(default_factory=list)
     identifiers: list[Identifier] = field(default_factory=list)
+    change_date: ChangeDate | None = None
+    creation_date: CreationDate | None = None
     xref_id: str | None = None
 
 
@@ -129,6 +155,8 @@ class Family:
     source_citations: list[SourceCitation] = field(default_factory=list)
     media_links: list[MultimediaLink] = field(default_factory=list)
     identifiers: list[Identifier] = field(default_factory=list)
+    change_date: ChangeDate | None = None
+    creation_date: CreationDate | None = None
     xref_id: str | None = None
 
 
@@ -143,6 +171,8 @@ class Repository:
     faxes: list[str] = field(default_factory=list)
     web_pages: list[str] = field(default_factory=list)
     identifiers: list[Identifier] = field(default_factory=list)
+    change_date: ChangeDate | None = None
+    creation_date: CreationDate | None = None
     xref_id: str | None = None
 
 
@@ -165,6 +195,8 @@ class Source:
     text: str | None = None
     repository_citations: list[SourceRepositoryCitation] = field(default_factory=list)
     identifiers: list[Identifier] = field(default_factory=list)
+    change_date: ChangeDate | None = None
+    creation_date: CreationDate | None = None
     xref_id: str | None = None
 
 

@@ -28,6 +28,7 @@ from ._links import build_family_index
 from ._records import (
     family_lines,
     individual_lines,
+    meta_lines,
     multimedia_lines,
     repository_lines,
     shared_note_lines,
@@ -36,7 +37,7 @@ from ._records import (
 )
 
 
-def _record_lines(record: Record, ctx: Context) -> Iterator[Line]:
+def _typed_record_lines(record: Record, ctx: Context) -> Iterator[Line]:
     if isinstance(record, Submitter):
         yield from submitter_lines(record, ctx)
     elif isinstance(record, Individual):
@@ -53,6 +54,12 @@ def _record_lines(record: Record, ctx: Context) -> Iterator[Line]:
         yield from shared_note_lines(record, ctx)
     else:
         raise TypeError(f"no serializer for record type {type(record).__name__}")
+
+
+def _record_lines(record: Record, ctx: Context) -> Iterator[Line]:
+    yield from _typed_record_lines(record, ctx)
+    # CHANGE_DATE/CREATION_DATE come last for every record.
+    yield from meta_lines(record.change_date, record.creation_date, ctx)
 
 
 def _used_schema_entries(body: list[Line], schema: dict[str, str]) -> list[tuple[str, str]]:

@@ -11,6 +11,8 @@ from __future__ import annotations
 from ._document import Document, Header, Record
 from ._pointers import VOID, VoidPointer
 from ._records import (
+    ChangeDate,
+    CreationDate,
     Family,
     Individual,
     LdsIndividualOrdinance,
@@ -51,6 +53,8 @@ __all__ = [
     "Address",
     "Attribute",
     "CallNumber",
+    "ChangeDate",
+    "CreationDate",
     "Crop",
     "Document",
     "Event",
