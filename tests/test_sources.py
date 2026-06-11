@@ -12,7 +12,7 @@ from gedcom7 import (
     SourceRepositoryCitation,
     dumps,
 )
-from gedcom7.enums import MediaType, Quality
+from gedcom7.enums import Medium, Quality
 
 
 def test_source_with_repository_citation() -> None:
@@ -21,9 +21,7 @@ def test_source_with_repository_citation() -> None:
         author="Jane Historian",
         title="Parish Register",
         repository_citations=[
-            SourceRepositoryCitation(
-                repo, call_numbers=[CallNumber("MS 42", medium=MediaType.BOOK)]
-            )
+            SourceRepositoryCitation(repo, call_numbers=[CallNumber("MS 42", medium=Medium.BOOK)])
         ],
     )
     out = dumps(Document(records=[source, repo]))

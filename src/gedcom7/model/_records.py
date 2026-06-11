@@ -15,12 +15,32 @@ from ._substructures import (
     Address,
     Attribute,
     CallNumber,
+    Crop,
     Event,
+    File,
     Identifier,
     LdsOrdinanceDetail,
     NonEvent,
     PersonalName,
 )
+
+
+@dataclass
+class Multimedia:
+    """A record referencing one or more external media files (`OBJE`)."""
+
+    files: list[File] = field(default_factory=list)
+    identifiers: list[Identifier] = field(default_factory=list)
+    xref_id: str | None = None
+
+
+@dataclass
+class MultimediaLink:
+    """A link to a Multimedia record (`MULTIMEDIA_LINK`)."""
+
+    multimedia: Multimedia | VoidPointer
+    crop: Crop | None = None
+    title: str | None = None
 
 
 @dataclass
@@ -68,6 +88,7 @@ class Individual:
     non_events: list[NonEvent] = field(default_factory=list)
     lds_ordinances: list[LdsIndividualOrdinance] = field(default_factory=list)
     source_citations: list[SourceCitation] = field(default_factory=list)
+    media_links: list[MultimediaLink] = field(default_factory=list)
     identifiers: list[Identifier] = field(default_factory=list)
     xref_id: str | None = None
 
@@ -90,6 +111,7 @@ class Family:
     non_events: list[NonEvent] = field(default_factory=list)
     sealings: list[LdsSpouseSealing] = field(default_factory=list)
     source_citations: list[SourceCitation] = field(default_factory=list)
+    media_links: list[MultimediaLink] = field(default_factory=list)
     identifiers: list[Identifier] = field(default_factory=list)
     xref_id: str | None = None
 

@@ -4,13 +4,15 @@ from __future__ import annotations
 
 from collections.abc import Iterator
 
-from ..enums import NameType, OrdinanceStatus, enum_value
+from ..enums import Medium, NameType, OrdinanceStatus, enum_value
 from ..lines import Line
 from ..model import (
     Address,
     Attribute,
+    Crop,
     Event,
     EventDetail,
+    File,
     Identifier,
     LdsOrdinanceDetail,
     NamePieces,
@@ -18,7 +20,7 @@ from ..model import (
     PersonalName,
     Place,
 )
-from ..types import date_value_gedcom, text_list
+from ..types import date_value_gedcom, integer, text_list
 
 
 def _name_pieces_lines(pieces: NamePieces, level: int) -> Iterator[Line]:
@@ -91,6 +93,30 @@ def address_lines(address: Address, level: int) -> Iterator[Line]:
         yield Line(level + 1, "POST", address.postal_code)
     if address.country is not None:
         yield Line(level + 1, "CTRY", address.country)
+
+
+def file_lines(file: File, level: int) -> Iterator[Line]:
+    yield Line(level, "FILE", file.path)
+    yield Line(level + 1, "FORM", file.form)
+    if file.medium is not None:
+        yield Line(level + 2, "MEDI", enum_value(file.medium, Medium))
+    if file.title is not None:
+        yield Line(level + 1, "TITL", file.title)
+    for tran in file.translations:
+        yield Line(level + 1, "TRAN", tran.path)
+        yield Line(level + 2, "FORM", tran.form)
+
+
+def crop_lines(crop: Crop, level: int) -> Iterator[Line]:
+    yield Line(level, "CROP")
+    for tag, value in (
+        ("TOP", crop.top),
+        ("LEFT", crop.left),
+        ("HEIGHT", crop.height),
+        ("WIDTH", crop.width),
+    ):
+        if value is not None:
+            yield Line(level + 1, tag, integer(value))
 
 
 def identifier_lines(identifier: Identifier, level: int) -> Iterator[Line]:

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Iterator
 
-from ..enums import MediaType, Quality, Sex, enum_value
+from ..enums import Medium, Quality, Sex, enum_value
 from ..lines import Line
 from ..model import (
     Family,
@@ -12,6 +12,8 @@ from ..model import (
     Individual,
     LdsIndividualOrdinance,
     LdsSpouseSealing,
+    Multimedia,
+    MultimediaLink,
     Repository,
     Source,
     SourceCitation,
@@ -23,7 +25,9 @@ from ._substructures import (
     address_lines,
     attribute_lines,
     contact_lines,
+    crop_lines,
     event_lines,
+    file_lines,
     identifier_lines,
     non_event_lines,
     ordinance_detail_lines,
@@ -63,6 +67,26 @@ def _source_citations(citations: list[SourceCitation], ctx: Context, level: int)
         yield from source_citation_lines(citation, ctx, level)
 
 
+def multimedia_link_lines(link: MultimediaLink, ctx: Context, level: int) -> Iterator[Line]:
+    yield Line(level, "OBJE", ctx.table.resolve(link.multimedia), is_pointer=True)
+    if link.crop is not None:
+        yield from crop_lines(link.crop, level + 1)
+    if link.title is not None:
+        yield Line(level + 1, "TITL", link.title)
+
+
+def _media_links(links: list[MultimediaLink], ctx: Context, level: int) -> Iterator[Line]:
+    for link in links:
+        yield from multimedia_link_lines(link, ctx, level)
+
+
+def multimedia_lines(record: Multimedia, ctx: Context) -> Iterator[Line]:
+    yield Line(0, "OBJE", xref=ctx.table.of(record))
+    for file in record.files:
+        yield from file_lines(file, 1)
+    yield from _identifier_lines(record.identifiers, 1)
+
+
 def _repository_citation_lines(
     citation: SourceRepositoryCitation, ctx: Context, level: int
 ) -> Iterator[Line]:
@@ -70,7 +94,7 @@ def _repository_citation_lines(
     for call_number in citation.call_numbers:
         yield Line(level + 1, "CALN", call_number.value)
         if call_number.medium is not None:
-            yield Line(level + 2, "MEDI", enum_value(call_number.medium, MediaType))
+            yield Line(level + 2, "MEDI", enum_value(call_number.medium, Medium))
 
 
 def source_lines(record: Source, ctx: Context) -> Iterator[Line]:
@@ -129,6 +153,7 @@ def individual_lines(record: Individual, ctx: Context) -> Iterator[Line]:
         yield Line(1, "FAMS", ctx.table.of(family), is_pointer=True)
     yield from _identifier_lines(record.identifiers, 1)
     yield from _source_citations(record.source_citations, ctx, 1)
+    yield from _media_links(record.media_links, ctx, 1)
 
 
 def family_lines(record: Family, ctx: Context) -> Iterator[Line]:
@@ -149,3 +174,4 @@ def family_lines(record: Family, ctx: Context) -> Iterator[Line]:
         yield from _sealing_lines(sealing, 1)
     yield from _identifier_lines(record.identifiers, 1)
     yield from _source_citations(record.source_citations, ctx, 1)
+    yield from _media_links(record.media_links, ctx, 1)

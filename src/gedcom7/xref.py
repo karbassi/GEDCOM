@@ -13,6 +13,7 @@ from .model import (
     Document,
     Family,
     Individual,
+    Multimedia,
     Record,
     Repository,
     Source,
@@ -28,6 +29,7 @@ _PREFIXES: list[tuple[type, str]] = [
     (Family, "F"),
     (Source, "S"),
     (Repository, "R"),
+    (Multimedia, "O"),
     (Submitter, "U"),
 ]
 

@@ -26,7 +26,7 @@ class Restriction(StrEnum):
     PRIVACY = "PRIVACY"
 
 
-class MediaType(StrEnum):
+class Medium(StrEnum):
     """`MEDI` source-medium values."""
 
     AUDIO = "AUDIO"

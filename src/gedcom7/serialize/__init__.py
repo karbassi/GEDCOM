@@ -14,6 +14,7 @@ from ..model import (
     Document,
     Family,
     Individual,
+    Multimedia,
     Record,
     Repository,
     Source,
@@ -26,6 +27,7 @@ from ._links import build_family_index
 from ._records import (
     family_lines,
     individual_lines,
+    multimedia_lines,
     repository_lines,
     source_lines,
     submitter_lines,
@@ -43,6 +45,8 @@ def _record_lines(record: Record, ctx: Context) -> Iterator[Line]:
         yield from source_lines(record, ctx)
     elif isinstance(record, Repository):
         yield from repository_lines(record, ctx)
+    elif isinstance(record, Multimedia):
+        yield from multimedia_lines(record, ctx)
     else:
         raise TypeError(f"no serializer for record type {type(record).__name__}")
 

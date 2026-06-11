@@ -16,7 +16,7 @@ from __future__ import annotations
 from collections.abc import Iterator
 from dataclasses import dataclass
 
-from .model import Document, Family, Individual, Submitter, VoidPointer
+from .model import Document, Family, Individual, Multimedia, Submitter, VoidPointer
 
 
 class ValidationError(ValueError):
@@ -46,6 +46,13 @@ def _issues(document: Document) -> Iterator[Issue]:
 
         if isinstance(record, Submitter) and not record.name:
             yield Issue("SUBM requires a non-empty NAME")
+
+        if isinstance(record, Multimedia):
+            if not record.files:
+                yield Issue("OBJE requires at least one FILE")
+            for file in record.files:
+                if not file.form:
+                    yield Issue("every OBJE.FILE requires a non-empty FORM")
 
         if isinstance(record, Family):
             yield from _family_issues(record, known)

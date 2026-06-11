@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from ..enums import MediaType, NameType, OrdinanceStatus
+from ..enums import Medium, NameType, OrdinanceStatus
 from ..types import DateExact, DatePeriod, DateValue, Latitude, Longitude, Time
 
 
@@ -94,7 +94,36 @@ class CallNumber:
     """A repository call number (`CALN`) with an optional medium (`MEDI`)."""
 
     value: str
-    medium: MediaType | str | None = None
+    medium: Medium | str | None = None
+
+
+@dataclass
+class FileTranslation:
+    """An alternate-format copy of a media file (`FILE.TRAN`); FORM required."""
+
+    path: str
+    form: str
+
+
+@dataclass
+class File:
+    """A media file reference (`FILE`); FORM (media type) is required."""
+
+    path: str
+    form: str
+    medium: Medium | str | None = None
+    title: str | None = None
+    translations: list[FileTranslation] = field(default_factory=list)
+
+
+@dataclass
+class Crop:
+    """A crop region within a linked image (`CROP`)."""
+
+    top: int | None = None
+    left: int | None = None
+    height: int | None = None
+    width: int | None = None
 
 
 @dataclass
