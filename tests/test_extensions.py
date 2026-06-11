@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from gedcom7 import Document, ExtensionStructure, Submitter, dumps
+from gedcom import Document, ExtensionStructure, Submitter, dumps
 
 _SOUR_URI = "https://github.com/dthaler/gedcom-citations/_SOUR"
 _DATE_URI = "https://github.com/dthaler/gedcom-citations/_DATE"
@@ -59,7 +59,7 @@ def test_extension_tag_must_start_with_underscore() -> None:
 
 
 def test_validate_accepts_well_formed_extension() -> None:
-    from gedcom7 import validate
+    from gedcom import validate
 
     subm = Submitter("Ali", extensions=[ExtensionStructure("_SOUR")])
     assert validate(Document(records=[subm])) == []

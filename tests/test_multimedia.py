@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from gedcom7 import (
+from gedcom import (
     Crop,
     Document,
     File,
@@ -13,7 +13,7 @@ from gedcom7 import (
     ValidationError,
     dumps,
 )
-from gedcom7.enums import Medium
+from gedcom.enums import Medium
 
 
 def test_multimedia_record_with_file() -> None:

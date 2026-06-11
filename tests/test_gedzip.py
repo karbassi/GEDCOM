@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from gedcom7 import Document, File, GedzipError, Multimedia, dump_gedzip
+from gedcom import Document, File, GedzipError, Multimedia, dump_gedzip
 
 
 def _ged_text(archive: zipfile.ZipFile) -> str:

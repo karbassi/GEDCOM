@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from gedcom7 import (
+from gedcom import (
     Document,
     Family,
     Individual,
@@ -13,8 +13,8 @@ from gedcom7 import (
     ValidationError,
     dumps,
 )
-from gedcom7.enums import OrdinanceStatus
-from gedcom7.types import CalendarDate, DateExact
+from gedcom.enums import OrdinanceStatus
+from gedcom.types import CalendarDate, DateExact
 
 
 def _indi(**kw: object) -> Individual:

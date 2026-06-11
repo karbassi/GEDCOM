@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from gedcom7.types import (
+from gedcom.types import (
     Age,
     ApproxDate,
     Calendar,

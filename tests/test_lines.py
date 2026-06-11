@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from gedcom7.lines import BannedCharacterError, Line, render, render_line
+from gedcom.lines import BannedCharacterError, Line, render, render_line
 
 
 def test_simple_line() -> None:

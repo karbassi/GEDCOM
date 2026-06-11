@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import warnings
 
-from gedcom7 import (
+from gedcom import (
     Address,
     Document,
     Event,
@@ -17,7 +17,7 @@ from gedcom7 import (
     Submitter,
     dumps,
 )
-from gedcom7.types import Latitude, Longitude
+from gedcom.types import Latitude, Longitude
 
 
 def _indi(**kw: object) -> Individual:

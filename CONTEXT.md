@@ -1,4 +1,4 @@
-# gedcom7
+# GEDCOM
 
 A Python library that **writes** (serializes) an in-memory genealogical model to the FamilySearch GEDCOM 7.0.18 text format (`.ged`) and optionally to GEDZIP (`.gdz`). Reading/parsing is out of scope.
 

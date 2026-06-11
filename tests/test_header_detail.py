@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from gedcom7 import (
+from gedcom import (
     Alias,
     Document,
     Header,

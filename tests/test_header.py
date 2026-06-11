@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from gedcom7 import Document, Header, dumps
+from gedcom import Document, Header, dumps
 
 
 def test_header_copyright_single_line() -> None:

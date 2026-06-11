@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from gedcom7 import (
+from gedcom import (
     Document,
     Individual,
     Note,

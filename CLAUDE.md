@@ -1,4 +1,4 @@
-# gemcom7-writer
+# GEDCOM
 
 ## Agent skills
 

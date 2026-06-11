@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from gedcom7 import (
+from gedcom import (
     ChangeDate,
     CreationDate,
     Document,
@@ -10,7 +10,7 @@ from gedcom7 import (
     Submitter,
     dumps,
 )
-from gedcom7.types import DateExact, Time
+from gedcom.types import DateExact, Time
 
 
 def test_change_and_creation_dates_emitted_last() -> None:

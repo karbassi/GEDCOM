@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from gedcom7 import (
+from gedcom import (
     Document,
     Event,
     EventDetail,
@@ -11,7 +11,7 @@ from gedcom7 import (
     PersonalName,
     dumps,
 )
-from gedcom7.types import Age, CalendarDate, Time
+from gedcom.types import Age, CalendarDate, Time
 
 
 def _indi(**kw: object) -> Individual:

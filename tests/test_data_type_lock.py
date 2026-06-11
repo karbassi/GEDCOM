@@ -12,7 +12,7 @@ import csv
 from collections.abc import Callable
 from pathlib import Path
 
-from gedcom7.types import (
+from gedcom.types import (
     Age,
     Calendar,
     CalendarDate,

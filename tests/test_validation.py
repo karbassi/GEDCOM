@@ -4,7 +4,7 @@ import warnings
 
 import pytest
 
-from gedcom7 import (
+from gedcom import (
     Document,
     Event,
     EventDetail,
@@ -77,7 +77,7 @@ def test_cardinality_strict_raises_lenient_collects() -> None:
 
 
 def test_payload_validation_flags_non_integer_nchi_via_validate() -> None:
-    from gedcom7 import Attribute
+    from gedcom import Attribute
 
     indi = Individual(names=[PersonalName("X //")], attributes=[Attribute("NCHI", "five")])
     messages = validate(Document(records=[indi]), strict=False)
@@ -85,7 +85,7 @@ def test_payload_validation_flags_non_integer_nchi_via_validate() -> None:
 
 
 def test_payload_validation_strict_raises() -> None:
-    from gedcom7 import Attribute
+    from gedcom import Attribute
 
     indi = Individual(names=[PersonalName("X //")], attributes=[Attribute("NCHI", "five")])
     with pytest.raises(ValidationError, match="non-negative integer"):
@@ -93,7 +93,7 @@ def test_payload_validation_strict_raises() -> None:
 
 
 def test_payload_validation_accepts_integer_nchi() -> None:
-    from gedcom7 import Attribute
+    from gedcom import Attribute
 
     indi = Individual(names=[PersonalName("X //")], attributes=[Attribute("NCHI", "3")])
     assert validate(Document(records=[indi])) == []

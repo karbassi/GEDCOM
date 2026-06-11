@@ -8,8 +8,8 @@ from typing import Any
 
 import pytest
 
-from gedcom7.cli.errors import LoadError
-from gedcom7.cli.reader import read_document
+from gedcom.cli.errors import LoadError
+from gedcom.cli.reader import read_document
 
 _JSON = '{"individuals": [{"name": "A /B/"}]}'
 _TOML = 'individuals = [{ name = "A /B/" }]'
@@ -60,5 +60,5 @@ def test_missing_pyyaml_gives_actionable_error(tmp_path: Path, monkeypatch: Any)
         return real_import(name, *args, **kwargs)
 
     monkeypatch.setattr(builtins, "__import__", fake_import)
-    with pytest.raises(LoadError, match=r"gedcom7\[yaml\]"):
+    with pytest.raises(LoadError, match=r"gedcom\[yaml\]"):
         read_document(path)

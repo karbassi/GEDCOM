@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from gedcom7.enums import (
+from gedcom.enums import (
     AdoptingParent,
     Quality,
     Restriction,

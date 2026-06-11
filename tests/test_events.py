@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from gedcom7 import (
+from gedcom import (
     Attribute,
     Document,
     Event,
@@ -14,7 +14,7 @@ from gedcom7 import (
     ValidationError,
     dumps,
 )
-from gedcom7.types import CalendarDate, DatePeriod
+from gedcom.types import CalendarDate, DatePeriod
 
 
 def _indi(**kw: object) -> Individual:

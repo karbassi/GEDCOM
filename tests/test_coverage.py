@@ -10,7 +10,7 @@ from __future__ import annotations
 import csv
 from pathlib import Path
 
-from gedcom7 import (
+from gedcom import (
     Address,
     Alias,
     Association,
@@ -55,7 +55,7 @@ from gedcom7 import (
     Submitter,
     dumps,
 )
-from gedcom7.enums import (
+from gedcom.enums import (
     AdoptingParent,
     ExidType,
     FamcStatus,
@@ -68,7 +68,7 @@ from gedcom7.enums import (
     Role,
     Sex,
 )
-from gedcom7.types import (
+from gedcom.types import (
     Age,
     CalendarDate,
     DateExact,

@@ -6,8 +6,8 @@ import datetime
 
 import pytest
 
-from gedcom7.cli.dates import parse_date, parse_date_exact
-from gedcom7.cli.errors import LoadError
+from gedcom.cli.dates import parse_date, parse_date_exact
+from gedcom.cli.errors import LoadError
 
 
 @pytest.mark.parametrize(

@@ -8,9 +8,9 @@ from pathlib import Path
 
 import pytest
 
-from gedcom7.cli import build_document, main
-from gedcom7.cli.reader import read_document
-from gedcom7.cli.scaffold import scaffold
+from gedcom.cli import build_document, main
+from gedcom.cli.reader import read_document
+from gedcom.cli.scaffold import scaffold
 
 _DOC = '{"individuals": [{"xref": "I1", "name": "Jane /Doe/", "sex": "F"}]}'
 
@@ -27,7 +27,7 @@ def test_version(capsys: pytest.CaptureFixture[str]) -> None:
     assert info.value.code == 0
     out = capsys.readouterr().out
     assert out.startswith("gedcom ")
-    assert "gedcom7" not in out  # the command is named 'gedcom', not 'gedcom7'
+    assert "gedcom7" not in out  # the old 'gedcom7' name must never resurface
 
 
 def test_no_command_prints_help(capsys: pytest.CaptureFixture[str]) -> None:
@@ -103,7 +103,7 @@ def test_init_templates_build(tmp_path: Path, fmt: str) -> None:
     template = scaffold(fmt)
     path = _write(tmp_path, f"tree.{fmt}", template)
     document = build_document(read_document(path))
-    from gedcom7 import validate
+    from gedcom import validate
 
     assert validate(document, strict=True) == []
 

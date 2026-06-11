@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from gedcom7 import (
+from gedcom import (
     ChildLink,
     Document,
     Event,
@@ -12,7 +12,7 @@ from gedcom7 import (
     PersonalName,
     dumps,
 )
-from gedcom7.enums import AdoptingParent, FamcStatus, Pedigree
+from gedcom.enums import AdoptingParent, FamcStatus, Pedigree
 
 
 def _indi(**kw: object) -> Individual:

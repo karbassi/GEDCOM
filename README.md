@@ -1,4 +1,4 @@
-# gedcom7
+# GEDCOM
 
 A [GEDCOM 7.0.18](https://gedcom.io/specifications/FamilySearchGEDCOMv7.html) writer for Python — serialize a genealogical data model to FamilySearch GEDCOM 7 text.
 
@@ -20,7 +20,7 @@ gedcom build tree.yaml -o tree.gdz    # or a GEDZIP package (.gdz)
 gedcom build tree.yaml             # no -o: print GEDCOM to stdout
 ```
 
-`python -m gedcom7` is equivalent to the `gedcom` command. Run `gedcom help` (or `gedcom help <command>`) for usage. Exit codes: `0` success, `1` validation failure, `2` usage/input error. `build` is strict by default; `--lenient` downgrades document-level rule violations to warnings and emits anyway.
+`python -m gedcom` is equivalent to the `gedcom` command. Run `gedcom help` (or `gedcom help <command>`) for usage. Exit codes: `0` success, `1` validation failure, `2` usage/input error. `build` is strict by default; `--lenient` downgrades document-level rule violations to warnings and emits anyway.
 
 ### Driving it from an AI agent
 
@@ -90,7 +90,7 @@ sources:
 JSON and TOML inputs use only the standard library. YAML needs PyYAML, an optional extra:
 
 ```sh
-pip install "gedcom7[yaml]"
+pip install "gedcom[yaml]"
 ```
 
 ## Tech stack

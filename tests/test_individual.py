@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from gedcom7 import (
+from gedcom import (
     Document,
     Individual,
     NamePieces,
@@ -8,7 +8,7 @@ from gedcom7 import (
     PersonalName,
     dumps,
 )
-from gedcom7.enums import NameType, Sex
+from gedcom.enums import NameType, Sex
 
 
 def test_minimal_individual_with_name_and_sex() -> None:

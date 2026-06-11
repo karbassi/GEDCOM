@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from gedcom7 import Document, Identifier, Individual, PersonalName, dumps
-from gedcom7.enums import ExidType
+from gedcom import Document, Identifier, Individual, PersonalName, dumps
+from gedcom.enums import ExidType
 
 
 def _indi(**kw: object) -> Individual:

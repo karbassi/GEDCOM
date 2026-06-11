@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from gedcom7 import VOID, Document, Family, Individual, PersonalName, dumps
+from gedcom import VOID, Document, Family, Individual, PersonalName, dumps
 
 
 def _indi(name: str) -> Individual:

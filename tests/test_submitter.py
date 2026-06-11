@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from gedcom7 import Document, Header, Submitter, ValidationError, dumps
-from gedcom7.xref import VOID, XrefError, build_xref_table
+from gedcom import Document, Header, Submitter, ValidationError, dumps
+from gedcom.xref import VOID, XrefError, build_xref_table
 
 
 def test_full_submitter_document_golden() -> None:

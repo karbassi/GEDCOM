@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from gedcom7 import Document, Header, dump, dumps
+from gedcom import Document, Header, dump, dumps
 
 MINIMAL = "0 HEAD\n1 GEDC\n2 VERS 7.0\n0 TRLR\n"
 

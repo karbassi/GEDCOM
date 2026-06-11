@@ -6,9 +6,9 @@ from typing import Any
 
 import pytest
 
-from gedcom7 import dumps, validate
-from gedcom7.cli import build_document
-from gedcom7.cli.errors import LoadError
+from gedcom import dumps, validate
+from gedcom.cli import build_document
+from gedcom.cli.errors import LoadError
 
 
 def _build(mapping: dict[str, Any]) -> str:
@@ -162,7 +162,7 @@ def test_duplicate_handle_rejected() -> None:
 
 def test_header_defaults_a_source() -> None:
     out = _build({"individuals": [{"name": "A /B/"}]})
-    assert "1 SOUR gedcom7\n" in out
+    assert "1 SOUR gedcom\n" in out
 
 
 def test_maximal_document_has_no_validator_issues() -> None:

@@ -1,8 +1,8 @@
-"""The spec-backed cardinality rule set (gedcom7.cardinality)."""
+"""The spec-backed cardinality rule set (gedcom.cardinality)."""
 
 from __future__ import annotations
 
-from gedcom7.cardinality import (
+from gedcom.cardinality import (
     Rule,
     build_rules,
     check_tree,

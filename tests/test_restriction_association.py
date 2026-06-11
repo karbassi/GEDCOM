@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from gedcom7 import (
+from gedcom import (
     VOID,
     Association,
     Document,
@@ -8,7 +8,7 @@ from gedcom7 import (
     PersonalName,
     dumps,
 )
-from gedcom7.enums import Restriction, Role
+from gedcom.enums import Restriction, Role
 
 
 def _indi(name: str, **kw: object) -> Individual:

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from gedcom7 import (
+from gedcom import (
     VOID,
     CallNumber,
     Document,
@@ -12,7 +12,7 @@ from gedcom7 import (
     SourceRepositoryCitation,
     dumps,
 )
-from gedcom7.enums import Medium, Quality
+from gedcom.enums import Medium, Quality
 
 
 def test_source_with_repository_citation() -> None:
@@ -50,8 +50,8 @@ def test_void_source_citation() -> None:
 
 
 def test_source_data_and_text_mime() -> None:
-    from gedcom7 import Source, SourceData, SourceDataEvent
-    from gedcom7.types import CalendarDate, DatePeriod
+    from gedcom import Source, SourceData, SourceDataEvent
+    from gedcom.types import CalendarDate, DatePeriod
 
     src = Source(
         text="extract",
@@ -74,8 +74,8 @@ def test_source_data_and_text_mime() -> None:
 
 
 def test_citation_data_event_role() -> None:
-    from gedcom7 import Individual, PersonalName, Source, SourceCitation
-    from gedcom7.enums import Role
+    from gedcom import Individual, PersonalName, Source, SourceCitation
+    from gedcom.enums import Role
 
     src = Source(title="Census")
     indi = Individual(

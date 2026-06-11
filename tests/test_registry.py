@@ -9,7 +9,7 @@ from __future__ import annotations
 import csv
 from pathlib import Path
 
-from gedcom7.enums import (
+from gedcom.enums import (
     AdoptingParent,
     ExidType,
     FamcStatus,
@@ -22,7 +22,7 @@ from gedcom7.enums import (
     Role,
     Sex,
 )
-from gedcom7.types import _EPOCH_CALENDARS, _MONTHS, Calendar
+from gedcom.types import _EPOCH_CALENDARS, _MONTHS, Calendar
 
 _REGISTRY = Path(__file__).resolve().parents[1] / "registry"
 
@@ -108,7 +108,7 @@ def test_calendar_months_and_epochs_match_registry() -> None:
 def test_packaged_spec_tables_match_vendored_registry() -> None:
     # The runtime copies under the package must stay byte-identical to the
     # vendored registry so validation can't drift from the documented source.
-    packaged = _REGISTRY.parents[0] / "src" / "gedcom7" / "_spec"
+    packaged = _REGISTRY.parents[0] / "src" / "gedcom" / "_spec"
     for name in (
         "cardinalities.tsv",
         "substructures.tsv",
@@ -123,7 +123,7 @@ def test_packaged_spec_tables_match_vendored_registry() -> None:
 def test_registered_extensions_match_registry() -> None:
     from collections import defaultdict
 
-    from gedcom7.extensions import registered_extension_uris
+    from gedcom.extensions import registered_extension_uris
 
     by_tag: dict[str, set[str]] = defaultdict(set)
     with (_REGISTRY / "extension-structures.tsv").open(encoding="utf-8") as handle:

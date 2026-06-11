@@ -4,10 +4,10 @@ import json
 
 import pytest
 
-from gedcom7 import Document, Header, Individual, PersonalName, dumps
-from gedcom7.cli.scaffold import scaffold
-from gedcom7.cli.schema import dialect_schema, json_schema, json_schema_text
-from gedcom7.enums import Sex
+from gedcom import Document, Header, Individual, PersonalName, dumps
+from gedcom.cli.scaffold import scaffold
+from gedcom.cli.schema import dialect_schema, json_schema, json_schema_text
+from gedcom.enums import Sex
 
 
 def test_extension_enum_value_auto_emits_schema() -> None:
