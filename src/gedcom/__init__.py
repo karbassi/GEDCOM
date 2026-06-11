@@ -52,7 +52,7 @@ from .model import (
     SourceRepositoryCitation,
     Submitter,
 )
-from .parse import ParseError, read_text
+from .parse import ParseError, read_path, read_text
 from .validation import ValidationError, validate
 from .writer import dump, dumps
 
@@ -107,6 +107,7 @@ __all__ = [
     "dump",
     "dump_gedzip",
     "dumps",
+    "read_path",
     "read_text",
     "validate",
 ]

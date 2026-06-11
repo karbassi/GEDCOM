@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
 #MISE description="Type-check with mypy (strict)"
 set -euo pipefail
-uv run mypy
+# `python -m` so mypy runs in the env that has the editable install.
+uv run python -m mypy

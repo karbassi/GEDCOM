@@ -1,12 +1,12 @@
 # GEDCOM
 
-A [GEDCOM 7.0.18](https://gedcom.io/specifications/FamilySearchGEDCOMv7.html) writer for Python — serialize a genealogical data model to FamilySearch GEDCOM 7 text.
+A [GEDCOM 7.0.18](https://gedcom.io/specifications/FamilySearchGEDCOMv7.html) writer for Python — serialize a genealogical data model to FamilySearch GEDCOM 7 text — with a round-trip reader for its own output.
 
-> Status: feature-complete for the standard structures. The writer serializes the full GEDCOM 7 record set (HEAD, INDI, FAM, OBJE, REPO, SNOTE, SOUR, SUBM, TRLR) with all 16 data types, 4 calendars, every enumeration set, the reusable substructure blocks (names, events, attributes, non-events, LDS ordinances, places, addresses, identifiers, associations, restrictions, source/repository citations, multimedia links, notes, change/creation dates), extension enum values and extension *structures* (registered + arbitrary) with auto-emitted `HEAD.SCHMA`, registered `EXID` type URIs (`ExidType`), spec-backed cardinality validation, two-tier strict/lenient validation, and GEDZIP (`.gdz`) packaging. A command-line tool (`gedcom`) builds `.ged`/`.gdz` files from a friendly YAML/JSON/TOML authoring document. Code is drift-locked to the vendored FamilySearch registries (`registry/`). See `.scratch/` for the plan and issues.
+> Status: feature-complete for the standard structures. The writer serializes the full GEDCOM 7 record set (HEAD, INDI, FAM, OBJE, REPO, SNOTE, SOUR, SUBM, TRLR) with all 16 data types, 4 calendars, every enumeration set, the reusable substructure blocks (names, events, attributes, non-events, LDS ordinances, places, addresses, identifiers, associations, restrictions, source/repository citations, multimedia links, notes, change/creation dates), extension enum values and extension *structures* (registered + arbitrary) with auto-emitted `HEAD.SCHMA`, registered `EXID` type URIs (`ExidType`), spec-backed cardinality validation, two-tier strict/lenient validation, and GEDZIP (`.gdz`) packaging. A **reader** (`read_text`/`read_path`) parses any document the writer produces back into the model — strict, and verified by a `write → read → write` byte-identical round-trip (ADR-0005). A command-line tool (`gedcom`) builds `.ged`/`.gdz` files from a friendly YAML/JSON/TOML authoring document. Code is drift-locked to the vendored FamilySearch registries (`registry/`). See `.scratch/` for the plan and issues.
 
 ### Known limitations
 
-- **Reading/parsing** GEDCOM — permanently out of scope; this is a writer only. The CLI's input is a separate, friendlier authoring dialect, not GEDCOM.
+- **Reading arbitrary third-party GEDCOM** — out of scope. The reader is strict and bounded to documents this library wrote (well-formed GEDCOM 7); it is not a lenient parser for legacy 5.5.1, messy exports, or untrusted input. The CLI's input is a separate, friendlier authoring dialect, not GEDCOM.
 
 ## Command-line tool
 
@@ -92,6 +92,22 @@ JSON and TOML inputs use only the standard library. YAML needs PyYAML, an option
 ```sh
 pip install "gedcom[yaml]"
 ```
+
+## Reading
+
+The library can read its own output back into the model. `read_text` parses a GEDCOM 7 string; `read_path` reads a `.ged` file or a `.gdz` GEDZIP archive (dispatching on the extension, mirroring `dump`/`dump_gedzip`).
+
+```python
+import gedcom
+
+text = gedcom.dumps(document)          # write
+same = gedcom.read_text(text)          # read it back
+assert gedcom.dumps(same) == text      # write → read → write is byte-identical
+
+document = gedcom.read_path("tree.ged")  # or "tree.gdz"
+```
+
+The reader is **strict** and scoped to documents this library wrote: malformed input, undeclared extension tags, and values that violate the model's invariants raise `gedcom.ParseError`. It is not a lenient parser for arbitrary third-party GEDCOM (see *Known limitations* and ADR-0005). Cross-references (`FAMS`/`FAMC`, `HUSB`/`WIFE`/`CHIL`, citations, media links) are resolved back to object references, so the parsed model has the same shape the writer consumes.
 
 ## Tech stack
 

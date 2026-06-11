@@ -1,6 +1,6 @@
 # 02 — Value parsing: the 16 data types
 
-Status: ready-for-agent
+Status: done
 Type: AFK
 
 ## Parent

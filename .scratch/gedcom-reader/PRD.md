@@ -1,6 +1,6 @@
 # PRD: gedcom — GEDCOM 7 reader (round-trip our own output)
 
-Status: ready-for-agent
+Status: done
 
 ## Problem Statement
 

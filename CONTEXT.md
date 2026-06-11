@@ -1,6 +1,6 @@
 # GEDCOM
 
-A Python library that **writes** (serializes) an in-memory genealogical model to the FamilySearch GEDCOM 7.0.18 text format (`.ged`) and optionally to GEDZIP (`.gdz`). Reading/parsing is out of scope.
+A Python library that **writes** (serializes) an in-memory genealogical model to the FamilySearch GEDCOM 7.0.18 text format (`.ged`) and optionally to GEDZIP (`.gdz`), and **reads** its own output back into the model. The reader is strict and bounded to documents this library wrote — a `write → read → write` round-trip (ADR-0005), not a lenient parser for arbitrary third-party GEDCOM, which remains out of scope.
 
 ## Language
 
@@ -59,6 +59,13 @@ A reusable named cluster of substructures (e.g. Place Structure, Source Citation
 
 **Inline Note** vs **Shared Note**:
 An inline **Note** carries its text directly on a `NOTE` line under its owner. A **Shared Note** is a standalone record (`SNOTE`) pointed to by reference. Both are exposed, but they are distinct concepts.
+
+**Reader**:
+The inverse of the writer (the `parse` package): turns GEDCOM 7 text or GEDZIP back into a Document. Strict and bounded to this library's own output.
+_Avoid_: Parser (in the general sense — the Reader is not a lenient, third-party GEDCOM parser)
+
+**Round-trip**:
+The Reader's contract and test oracle: for any document the writer accepts, `write → read → write` reproduces byte-identical text, and `read(write(doc))` reconstructs an equal model (ignoring transient xref ids and the serialization-derived `HEAD.SCHMA` map).
 
 ## Relationships
 

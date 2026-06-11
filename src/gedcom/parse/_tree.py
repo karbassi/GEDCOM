@@ -34,6 +34,15 @@ class Node:
         """The first child with ``tag``, or ``None``."""
         return next((c for c in self.children if c.tag == tag), None)
 
+    def all(self, tag: str) -> list[Node]:
+        """Every direct child with ``tag``, in order."""
+        return [c for c in self.children if c.tag == tag]
+
+    def text(self, tag: str) -> str | None:
+        """The value of the first child with ``tag``, or ``None``."""
+        child = self.child(tag)
+        return child.value if child is not None else None
+
 
 def build_tree(lines: Iterable[Line]) -> list[Node]:
     """Assemble logical lines into a forest of level-0 structure trees."""

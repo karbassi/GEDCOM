@@ -1,6 +1,6 @@
 # 07 — GEDZIP (.gdz) reading
 
-Status: ready-for-agent
+Status: done
 Type: AFK
 
 ## Parent

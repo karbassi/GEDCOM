@@ -1,6 +1,6 @@
 # 08 — Full-corpus round-trip property + docs
 
-Status: ready-for-agent
+Status: done
 Type: AFK
 
 ## Parent

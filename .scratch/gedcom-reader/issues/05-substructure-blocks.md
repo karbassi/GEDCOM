@@ -1,6 +1,6 @@
 # 05 — Substructure blocks
 
-Status: ready-for-agent
+Status: done
 Type: AFK
 
 ## Parent

@@ -1,6 +1,6 @@
 # 03 — Core records: Individual + Family with pointer resolution
 
-Status: ready-for-agent
+Status: done
 Type: AFK
 
 ## Parent

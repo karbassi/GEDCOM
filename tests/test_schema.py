@@ -45,8 +45,16 @@ def test_json_schema_shape() -> None:
     assert schema["$schema"] == "https://json-schema.org/draft/2020-12/schema"
     assert schema["additionalProperties"] is False
     props = schema["properties"]
-    for key in ("header", "submitters", "individuals", "families", "sources",
-                "repositories", "multimedia", "shared_notes"):
+    for key in (
+        "header",
+        "submitters",
+        "individuals",
+        "families",
+        "sources",
+        "repositories",
+        "multimedia",
+        "shared_notes",
+    ):
         assert key in props
     # the dialect sections (minus the header pseudo-record) match the schema command
     assert set(props) - {"header"} == {s["key"] for s in dialect_schema()["sections"]}
