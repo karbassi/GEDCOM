@@ -1,0 +1,15 @@
+name	uri	label
+AFN	https://gedcom.io/terms/v7/AFN	Ancestral File Number
+BillionGraves-CemeteryId	https://www.billiongraves.com/cemetery/name/	BillionGraves Cemetery ID
+BillionGraves-GraveId	https://www.billiongraves.com/grave/name/	BillionGraves Grave ID
+FamilySearch-MemoryId	https://gedcom.io/exid-type/FamilySearch-MemoryId	FamilySearch Memory ID
+FamilySearch-PersonId	https://gedcom.io/exid-type/FamilySearch-PersonId	FamilySearch Person ID
+FamilySearch-PlaceId	https://gedcom.io/exid-type/FamilySearch-PlaceId	FamilySearch Place ID
+FamilySearch-SourceDescriptionId	https://gedcom.io/exid-type/FamilySearch-SourceDescriptionId	FamilySearch Source Description ID
+FamilySearch-UserId	https://gedcom.io/exid-type/FamilySearch-UserId	FamilySearch User ID
+FindAGrave-CemeteryId	https://www.findagrave.com/cemetery/	FindAGrave Cemetery ID
+FindAGrave-MemorialId	https://www.findagrave.com/memorial/	FindAGrave Memorial ID
+GOV-ID	https://gov.genealogy.net/	GOV Historic Gazeteer ID
+RFN	https://gedcom.io/terms/v7/RFN	Record File Number
+RIN	https://gedcom.io/terms/v7/RIN	Record ID Number
+WikiTree-PersonId	https://www.wikitree.com/wiki/	WikiTree Person ID

@@ -1,0 +1,15 @@
+name	tags	uri	label	payload
+Ancestry_PUBL_DATE		https://github.com/FamilySearch/GEDCOM-registries/blob/main/structure/extension/Ancestry_PUBL_DATE.yaml	Publication Date	https://gedcom.io/terms/v5.5.1/type-DATE_EXACT
+Ancestry_PUBL_PLAC		https://github.com/FamilySearch/GEDCOM-registries/blob/main/structure/extension/Ancestry_PUBL_PLAC.yaml	Publication Place	https://gedcom.io/terms/v5.5.1/type-PLACE_NAME
+MagiKey_AGER	_AGER	https://armidalesoftware.com/issue/tags/AGER.htm	Age range	https://armidalesoftware.com/issue/types/AgeRange.htm
+MagiKey_CENR	_CENR	https://armidalesoftware.com/issue/tags/CENR.htm	Census record	@<https://armidalesoftware.com/issue/tags/record-CENR.htm>@
+MagiKey_CENR_INDI		https://armidalesoftware.com/issue/tags/INDI.htm	Individual	@<https://gedcom.io/terms/v5.5.1/record-INDI>@
+MagiKey_CENR_SEX		https://armidalesoftware.com/issue/tags/SEX.htm	Sex	http://www.w3.org/2001/XMLSchema#string
+MagiKey_CENR_SEX_AGE		https://armidalesoftware.com/issue/tags/AGE.htm	Age	https://gedcom.io/terms/v5.5.1/type-AGE_AT_EVENT
+MagiKey_FATH		https://armidalesoftware.com/issue/tags/FATH.htm	Father	
+MagiKey_MOTH		https://armidalesoftware.com/issue/tags/MOTH.htm	Mother	
+MagiKey_MSTAT	_MSTAT	https://armidalesoftware.com/issue/tags/MSTAT.htm	Marital status	http://www.w3.org/2001/XMLSchema#string
+MagiKey_SCHD	_SCHD	https://armidalesoftware.com/issue/tags/SCHD.htm	Schedule	http://www.w3.org/2001/XMLSchema#string
+MagiKey_record_CENR	_CENR	https://armidalesoftware.com/issue/tags/record-CENR.htm	Census record	
+_DATE	_DATE	https://github.com/dthaler/gedcom-citations/_DATE	Date	https://gedcom.io/terms/v7/type-Date
+_SOUR	_SOUR	https://github.com/dthaler/gedcom-citations/_SOUR	Source	@<https://gedcom.io/terms/v7/record-SOUR>@

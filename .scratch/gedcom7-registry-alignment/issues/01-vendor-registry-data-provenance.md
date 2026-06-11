@@ -1,6 +1,6 @@
 # 01 — Vendor EXID/calendar/month/extension registry data + provenance
 
-Status: ready-for-agent
+Status: done
 Type: AFK
 
 ## Parent
