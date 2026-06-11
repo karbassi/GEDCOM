@@ -123,7 +123,7 @@ def test_registered_extensions_match_registry() -> None:
     by_tag: dict[str, set[str]] = defaultdict(set)
     with (_REGISTRY / "extension-structures.tsv").open(encoding="utf-8") as handle:
         for row in csv.DictReader(handle, delimiter="\t"):
-            for tag in (row["tags"].split(",") if row["tags"] else []):
+            for tag in row["tags"].split(",") if row["tags"] else []:
                 by_tag[tag].add(row["uri"])
     expected = {tag: next(iter(uris)) for tag, uris in by_tag.items() if len(uris) == 1}
     assert registered_extension_uris() == expected

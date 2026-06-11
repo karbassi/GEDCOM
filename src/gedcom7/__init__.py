@@ -6,6 +6,7 @@ format. See the issue tracker under ``.scratch/`` for the build plan.
 
 from __future__ import annotations
 
+from .gedzip import GedzipError, dump_gedzip
 from .model import (
     VOID,
     Address,
@@ -70,6 +71,7 @@ __all__ = [
     "Family",
     "File",
     "FileTranslation",
+    "GedzipError",
     "Header",
     "HeaderSource",
     "Identifier",
@@ -99,6 +101,7 @@ __all__ = [
     "ValidationError",
     "__version__",
     "dump",
+    "dump_gedzip",
     "dumps",
     "validate",
 ]

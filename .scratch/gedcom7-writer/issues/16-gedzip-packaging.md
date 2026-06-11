@@ -1,6 +1,6 @@
 # 16 — GEDZIP (.gdz) packaging
 
-Status: ready-for-agent
+Status: done
 Type: AFK
 
 ## Parent

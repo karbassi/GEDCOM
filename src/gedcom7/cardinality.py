@@ -87,9 +87,7 @@ class _Frame:
     counts: dict[str, int]
 
 
-def check_tree(
-    lines: Iterable[tuple[int, str]], rules: RuleSet
-) -> Iterator[Violation]:
+def check_tree(lines: Iterable[tuple[int, str]], rules: RuleSet) -> Iterator[Violation]:
     """Yield cardinality violations for a ``(level, tag)`` structure stream.
 
     The stream is in document order. A line's structure is resolved from its
@@ -102,9 +100,7 @@ def check_tree(
             return
         for rule in rules.rules_for(frame.structure):
             count = frame.counts.get(rule.tag, 0)
-            if count < rule.minimum or (
-                rule.maximum is not None and count > rule.maximum
-            ):
+            if count < rule.minimum or (rule.maximum is not None and count > rule.maximum):
                 yield Violation(
                     structure_tag=frame.tag,
                     child_tag=rule.tag,
@@ -121,11 +117,7 @@ def check_tree(
         superstructure = "" if parent is None else parent.structure
         if parent is not None and parent.structure is not None:
             parent.counts[tag] = parent.counts.get(tag, 0) + 1
-        structure = (
-            rules.structure_of(superstructure, tag)
-            if superstructure is not None
-            else None
-        )
+        structure = rules.structure_of(superstructure, tag) if superstructure is not None else None
         stack.append(_Frame(level=level, tag=tag, structure=structure, counts={}))
     while stack:
         yield from finish(stack.pop())
@@ -150,9 +142,7 @@ def build_rules(
     structure_by_super_tag: dict[tuple[str, str], str] = {
         (r["superstructure"], r["tag"]): r["structure"] for r in substructure_rows
     }
-    top_level = frozenset(
-        r["tag"] for r in substructure_rows if not r["superstructure"]
-    )
+    top_level = frozenset(r["tag"] for r in substructure_rows if not r["superstructure"])
 
     grouped: dict[str, list[Rule]] = {}
     for row in cardinality_rows:

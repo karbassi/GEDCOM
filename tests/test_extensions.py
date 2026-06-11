@@ -14,9 +14,7 @@ def test_registered_extension_serializes_with_nested_children() -> None:
     subm = Submitter(
         "Ali",
         extensions=[
-            ExtensionStructure(
-                "_SOUR", children=(ExtensionStructure("_DATE", value="2024"),)
-            )
+            ExtensionStructure("_SOUR", children=(ExtensionStructure("_DATE", value="2024"),))
         ],
     )
     out = dumps(Document(records=[subm]))
