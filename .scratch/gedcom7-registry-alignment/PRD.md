@@ -1,6 +1,6 @@
 # PRD: gedcom7 — registry alignment & registered extensions
 
-Status: needs-triage
+Status: done
 
 ## Problem Statement
 
