@@ -24,7 +24,7 @@ from .errors import LoadError
 from .loader import build_document
 from .reader import read_document
 from .scaffold import scaffold
-from .schema import GUIDE, schema_json, schema_text
+from .schema import GUIDE, json_schema_text, schema_json, schema_text
 
 _EXIT_OK = 0
 _EXIT_VALIDATION = 1
@@ -97,9 +97,10 @@ def _build_parser() -> argparse.ArgumentParser:
     schema_parser.add_argument(
         "-f",
         "--format",
-        choices=("json", "text"),
+        choices=("json", "text", "json-schema"),
         default="json",
-        help="output format (default: json)",
+        help="output format: json/text dialect description, or json-schema "
+        "(a Draft 2020-12 JSON Schema for editors) (default: json)",
     )
     schema_parser.set_defaults(handler=_cmd_schema)
 
@@ -190,7 +191,12 @@ def _cmd_init(args: argparse.Namespace) -> int:
 
 
 def _cmd_schema(args: argparse.Namespace) -> int:
-    sys.stdout.write(schema_text() if args.format == "text" else schema_json() + "\n")
+    if args.format == "text":
+        sys.stdout.write(schema_text())
+    elif args.format == "json-schema":
+        sys.stdout.write(json_schema_text() + "\n")
+    else:
+        sys.stdout.write(schema_json() + "\n")
     return _EXIT_OK
 
 

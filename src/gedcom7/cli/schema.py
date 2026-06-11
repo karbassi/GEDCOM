@@ -208,6 +208,344 @@ def schema_json() -> str:
     return json.dumps(dialect_schema(), indent=2)
 
 
+# --- JSON Schema (Draft 2020-12) for the authoring dialect -----------------
+# Editor-time companion to ``validate``: a JSON Schema validates the *parsed*
+# document (YAML/JSON/TOML all parse to the same data model), so editors that
+# speak ``# yaml-language-server: $schema=`` get autocomplete + inline errors,
+# and ``check-jsonschema``/``ajv`` give a fast structural lint. It checks shape,
+# property names, and enum vocabularies; ``gedcom validate`` remains the
+# authority for cross-reference resolution, date grammar, and cardinality.
+
+_DRAFT = "https://json-schema.org/draft/2020-12/schema"
+_IDENTIFIER_KINDS = ("REFN", "UID", "EXID")
+
+
+def _ref(name: str) -> dict[str, str]:
+    return {"$ref": f"#/$defs/{name}"}
+
+
+def _enum_schema(enum_cls: type[StrEnum]) -> dict[str, Any]:
+    """A field taking an enum: member name, spec value, or ``_``-extension."""
+    allowed = sorted({m.name.lower() for m in enum_cls} | {m.value for m in enum_cls})
+    return {"anyOf": [{"type": "string", "enum": allowed}, {"type": "string", "pattern": "^_"}]}
+
+
+def _str_array() -> dict[str, Any]:
+    return {"type": "array", "items": {"type": "string"}}
+
+
+def _obj(props: dict[str, Any], required: list[str] | None = None) -> dict[str, Any]:
+    out: dict[str, Any] = {"type": "object", "properties": props, "additionalProperties": False}
+    if required:
+        out["required"] = required
+    return out
+
+
+def _defs() -> dict[str, Any]:
+    name_block = _obj(
+        {
+            "value": {"type": "string"},
+            "type": _enum_schema(NameType),
+            "type_phrase": {"type": "string"},
+            "pieces": _obj(
+                {
+                    "prefix": {"type": "string"},
+                    "given": {"type": "string"},
+                    "nickname": {"type": "string"},
+                    "surname_prefix": {"type": "string"},
+                    "surname": {"type": "string"},
+                    "suffix": {"type": "string"},
+                }
+            ),
+            "translations": {"type": "array"},
+        }
+    )
+    event = _obj(
+        {
+            "tag": {"type": "string"},
+            "occurred": {"type": "boolean"},
+            "text": {"type": "string"},
+            "type": {"type": "string"},
+            "value": {"type": "string"},  # attribute payload
+            "date": {"type": "string"},
+            "time": {"type": "string"},
+            "date_phrase": {"type": "string"},
+            "sort_date": {"type": "string"},
+            "age": {"type": "string"},
+            "husband_age": {"type": "string"},
+            "wife_age": {"type": "string"},
+            "place": _ref("place"),
+            "address": _ref("address"),
+            "phones": _str_array(),
+            "agency": {"type": "string"},
+            "religion": {"type": "string"},
+            "cause": {"type": "string"},
+            "family_child": {"type": "string"},
+            "adopting_parent": _enum_schema(AdoptingParent),
+            "notes": {"type": "array", "items": _ref("note")},
+            "sources": {"type": "array", "items": _ref("citation")},
+            "media": {"type": "array", "items": _ref("mediaLink")},
+        },
+        required=["tag"],
+    )
+    return {
+        "handle": {"type": "string"},
+        "name": {"anyOf": [{"type": "string"}, name_block]},
+        "place": {
+            "anyOf": [
+                {"type": "string"},
+                _str_array(),
+                _obj(
+                    {
+                        "names": {"anyOf": [{"type": "string"}, _str_array()]},
+                        "form": {"type": "string"},
+                        "language": {"type": "string"},
+                        "map": {"type": "array", "items": {"type": "number"}},
+                        "translations": {"type": "array"},
+                    }
+                ),
+            ]
+        },
+        "address": {
+            "anyOf": [
+                {"type": "string"},
+                _obj(
+                    {
+                        "value": {"type": "string"},
+                        "city": {"type": "string"},
+                        "state": {"type": "string"},
+                        "postal_code": {"type": "string"},
+                        "country": {"type": "string"},
+                    }
+                ),
+            ]
+        },
+        "note": {
+            "anyOf": [
+                {"type": "string"},
+                _obj(
+                    {
+                        "text": {"type": "string"},
+                        "mime": {"type": "string"},
+                        "language": {"type": "string"},
+                        "translations": {"type": "array"},
+                    }
+                ),
+                _obj({"ref": {"type": "string"}}),
+            ]
+        },
+        "citation": {
+            "anyOf": [
+                {"type": "string"},
+                _obj(
+                    {
+                        "source": {"type": "string"},
+                        "page": {"type": "string"},
+                        "data_date": {"type": "string"},
+                        "data_texts": {"type": "array"},
+                        "event": {"type": "string"},
+                        "role": _enum_schema(Role),
+                        "quality": _enum_schema(Quality),
+                        "notes": {"type": "array", "items": _ref("note")},
+                        "media": {"type": "array", "items": _ref("mediaLink")},
+                    }
+                ),
+            ]
+        },
+        "mediaLink": {
+            "anyOf": [
+                {"type": "string"},
+                _obj(
+                    {
+                        "multimedia": {"type": "string"},
+                        "crop": _obj(
+                            {
+                                "top": {"type": "integer"},
+                                "left": {"type": "integer"},
+                                "height": {"type": "integer"},
+                                "width": {"type": "integer"},
+                            }
+                        ),
+                        "title": {"type": "string"},
+                    }
+                ),
+            ]
+        },
+        "identifier": _obj(
+            {
+                "kind": {"type": "string", "enum": list(_IDENTIFIER_KINDS)},
+                "value": {"type": "string"},
+                "type": {"type": "string"},
+            },
+            required=["kind", "value"],
+        ),
+        "child": {
+            "anyOf": [
+                {"type": "string"},
+                _obj(
+                    {
+                        "individual": {"type": "string"},
+                        "pedigree": _enum_schema(Pedigree),
+                        "status": _enum_schema(FamcStatus),
+                        "pedigree_phrase": {"type": "string"},
+                        "status_phrase": {"type": "string"},
+                    },
+                    required=["individual"],
+                ),
+            ]
+        },
+        "event": event,
+        "nameBlock": name_block,
+        "changeDate": _obj(
+            {"date": {"type": "string"}, "time": {"type": "string"}, "notes": {"type": "array"}}
+        ),
+    }
+
+
+def _record_props(extra: dict[str, Any], *, xref: bool = True) -> dict[str, Any]:
+    props: dict[str, Any] = {}
+    if xref:
+        props["xref"] = _ref("handle")
+    props.update(extra)
+    return props
+
+
+def json_schema() -> dict[str, Any]:
+    """A JSON Schema (Draft 2020-12) for the authoring dialect.
+
+    Enum vocabularies are pulled live from the enum classes, so the schema
+    tracks the library. Record and shared-block shapes are closed
+    (``additionalProperties: false``) so a mistyped key is flagged.
+    """
+    common = {
+        "notes": {"type": "array", "items": _ref("note")},
+        "sources": {"type": "array", "items": _ref("citation")},
+        "media": {"type": "array", "items": _ref("mediaLink")},
+        "identifiers": {"type": "array", "items": _ref("identifier")},
+    }
+    events = {
+        "events": {"type": "array", "items": _ref("event")},
+        "attributes": {"type": "array", "items": _ref("event")},
+        "non_events": {"type": "array"},
+    }
+    individual = _obj(
+        _record_props(
+            {
+                "name": _ref("name"),
+                "names": {"type": "array", "items": _ref("nameBlock")},
+                "sex": _enum_schema(Sex),
+                "restrictions": {"type": "array", "items": _enum_schema(Restriction)},
+                **events,
+                "lds_ordinances": {"type": "array"},
+                "associations": {"type": "array"},
+                "aliases": {"type": "array"},
+                "submitters": _str_array(),
+                "ancestor_interest": _str_array(),
+                "descendant_interest": _str_array(),
+                "change_date": _ref("changeDate"),
+                "creation_date": _ref("changeDate"),
+                **common,
+            }
+        ),
+        required=["xref"],
+    )
+    family = _obj(
+        _record_props(
+            {
+                "husband": {"type": "string"},
+                "wife": {"type": "string"},
+                "children": {"type": "array", "items": _ref("child")},
+                **events,
+                "sealings": {"type": "array"},
+                "submitters": _str_array(),
+                **common,
+            }
+        ),
+        required=["xref"],
+    )
+    source = _obj(
+        _record_props(
+            {
+                "author": {"type": "string"},
+                "title": {"type": "string"},
+                "abbreviation": {"type": "string"},
+                "publication": {"type": "string"},
+                "text": {"type": "string"},
+                "text_mime": {"type": "string"},
+                "text_language": {"type": "string"},
+                "data": {"type": "object"},
+                "repository_citations": {"type": "array"},
+                **common,
+            }
+        ),
+        required=["xref"],
+    )
+    contact = {
+        "address": _ref("address"),
+        "phones": _str_array(),
+        "emails": _str_array(),
+        "faxes": _str_array(),
+        "web_pages": _str_array(),
+    }
+    repository = _obj(
+        _record_props({"name": {"type": "string"}, **contact, **common}),
+        required=["xref", "name"],
+    )
+    multimedia = _obj(
+        _record_props(
+            {
+                "files": {"type": "array"},
+                "restrictions": {"type": "array", "items": _enum_schema(Restriction)},
+                **common,
+            }
+        ),
+        required=["xref"],
+    )
+    shared_note = _obj(
+        _record_props(
+            {
+                "text": {"type": "string"},
+                "mime": {"type": "string"},
+                "language": {"type": "string"},
+                "translations": {"type": "array"},
+                **common,
+            }
+        ),
+        required=["xref", "text"],
+    )
+    submitter = _obj(
+        _record_props({"name": {"type": "string"}, **contact, **common}),
+        required=["xref", "name"],
+    )
+    return {
+        "$schema": _DRAFT,
+        "$id": "https://gedcom.io/authoring-dialect.schema.json",
+        "title": "GEDCOM 7 authoring document",
+        "description": (
+            "Structural schema for the gedcom7 CLI authoring dialect (YAML/JSON/TOML). "
+            "Run `gedcom validate` for cross-reference, date-grammar, and cardinality checks."
+        ),
+        "type": "object",
+        "additionalProperties": False,
+        "properties": {
+            "header": {"type": "object"},
+            "submitters": {"type": "array", "items": submitter},
+            "individuals": {"type": "array", "items": individual},
+            "families": {"type": "array", "items": family},
+            "sources": {"type": "array", "items": source},
+            "repositories": {"type": "array", "items": repository},
+            "multimedia": {"type": "array", "items": multimedia},
+            "shared_notes": {"type": "array", "items": shared_note},
+        },
+        "$defs": _defs(),
+    }
+
+
+def json_schema_text() -> str:
+    """The authoring-dialect JSON Schema as a pretty-printed JSON string."""
+    return json.dumps(json_schema(), indent=2)
+
+
 def schema_text() -> str:
     """A compact human-readable rendering of the dialect schema."""
     schema = dialect_schema()
