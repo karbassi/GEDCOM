@@ -1,6 +1,6 @@
 # 01 — Walking skeleton: minimal valid document
 
-Status: needs-triage
+Status: done
 Type: HITL
 
 ## Parent

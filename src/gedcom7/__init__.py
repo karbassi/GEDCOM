@@ -1,12 +1,14 @@
 """gedcom7 — a GEDCOM 7.0.18 writer for Python.
 
-This package serializes a genealogical data model into the
-FamilySearch GEDCOM 7 text format. The public surface is built out
-incrementally; see the issue tracker under ``.scratch/`` for the plan.
+Serializes a genealogical data model into the FamilySearch GEDCOM 7 text
+format. See the issue tracker under ``.scratch/`` for the build plan.
 """
 
 from __future__ import annotations
 
-__all__ = ["__version__"]
+from .model import Document, Header
+from .writer import dump, dumps
+
+__all__ = ["Document", "Header", "__version__", "dump", "dumps"]
 
 __version__ = "0.0.0"
