@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from gedcom7 import Document, Header, Submitter, dumps
+from gedcom7 import Document, Header, Submitter, ValidationError, dumps
 from gedcom7.xref import VOID, XrefError, build_xref_table
 
 
@@ -37,7 +37,7 @@ def test_void_pointer() -> None:
 def test_reference_to_unadded_record_raises() -> None:
     subm = Submitter("X")
     doc = Document(Header(submitter=subm))  # submitter not in records
-    with pytest.raises(XrefError, match="not added"):
+    with pytest.raises(ValidationError, match="not added"):
         dumps(doc)
 
 

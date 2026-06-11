@@ -1,6 +1,6 @@
 # 08 — Validation pass (strict / lenient)
 
-Status: needs-triage
+Status: done
 Type: AFK
 
 ## Parent

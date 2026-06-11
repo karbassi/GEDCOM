@@ -17,6 +17,7 @@ from .model import (
     PersonalName,
     Submitter,
 )
+from .validation import ValidationError, validate
 from .writer import dump, dumps
 
 __all__ = [
@@ -29,9 +30,11 @@ __all__ = [
     "NameTranslation",
     "PersonalName",
     "Submitter",
+    "ValidationError",
     "__version__",
     "dump",
     "dumps",
+    "validate",
 ]
 
 __version__ = "0.0.0"
