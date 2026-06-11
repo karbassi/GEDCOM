@@ -8,10 +8,11 @@ object identity. ``VOID`` is the deliberate null pointer.
 
 from __future__ import annotations
 
-from .model import Document, Record, Submitter
+from .model import Document, Individual, Record, Submitter
 
 # Record class → xref id prefix. Extended as record types are added.
 _PREFIXES: list[tuple[type, str]] = [
+    (Individual, "I"),
     (Submitter, "U"),
 ]
 

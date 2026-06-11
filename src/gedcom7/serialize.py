@@ -9,8 +9,17 @@ from __future__ import annotations
 
 from collections.abc import Iterator
 
+from .enums import NameType, Sex, enum_value
 from .lines import Line
-from .model import Document, Header, Record, Submitter
+from .model import (
+    Document,
+    Header,
+    Individual,
+    NamePieces,
+    PersonalName,
+    Record,
+    Submitter,
+)
 from .xref import XrefTable
 
 
@@ -45,9 +54,47 @@ def _submitter_lines(record: Submitter, table: XrefTable) -> Iterator[Line]:
     yield from _contact_lines(record)
 
 
+def _name_pieces_lines(pieces: NamePieces, level: int) -> Iterator[Line]:
+    for tag, values in (
+        ("NPFX", pieces.prefix),
+        ("GIVN", pieces.given),
+        ("NICK", pieces.nickname),
+        ("SPFX", pieces.surname_prefix),
+        ("SURN", pieces.surname),
+        ("NSFX", pieces.suffix),
+    ):
+        for value in values:
+            yield Line(level, tag, value)
+
+
+def _personal_name_lines(name: PersonalName, level: int) -> Iterator[Line]:
+    yield Line(level, "NAME", name.value)
+    if name.type is not None:
+        yield Line(level + 1, "TYPE", enum_value(name.type, NameType))
+        if name.type_phrase is not None:
+            yield Line(level + 2, "PHRASE", name.type_phrase)
+    if name.pieces is not None:
+        yield from _name_pieces_lines(name.pieces, level + 1)
+    for tran in name.translations:
+        yield Line(level + 1, "TRAN", tran.value)
+        yield Line(level + 2, "LANG", tran.language)
+        if tran.pieces is not None:
+            yield from _name_pieces_lines(tran.pieces, level + 2)
+
+
+def _individual_lines(record: Individual, table: XrefTable) -> Iterator[Line]:
+    yield Line(0, "INDI", xref=table.of(record))
+    for name in record.names:
+        yield from _personal_name_lines(name, 1)
+    if record.sex is not None:
+        yield Line(1, "SEX", enum_value(record.sex, Sex))
+
+
 def _record_lines(record: Record, table: XrefTable) -> Iterator[Line]:
     if isinstance(record, Submitter):
         yield from _submitter_lines(record, table)
+    elif isinstance(record, Individual):
+        yield from _individual_lines(record, table)
     else:
         raise TypeError(f"no serializer for record type {type(record).__name__}")
 

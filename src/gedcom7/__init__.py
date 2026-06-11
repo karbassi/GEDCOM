@@ -6,10 +6,30 @@ format. See the issue tracker under ``.scratch/`` for the build plan.
 
 from __future__ import annotations
 
-from .model import Document, Header, Submitter
+from .model import (
+    Document,
+    Header,
+    Individual,
+    NamePieces,
+    NameTranslation,
+    PersonalName,
+    Submitter,
+)
 from .writer import dump, dumps
 from .xref import VOID
 
-__all__ = ["VOID", "Document", "Header", "Submitter", "__version__", "dump", "dumps"]
+__all__ = [
+    "VOID",
+    "Document",
+    "Header",
+    "Individual",
+    "NamePieces",
+    "NameTranslation",
+    "PersonalName",
+    "Submitter",
+    "__version__",
+    "dump",
+    "dumps",
+]
 
 __version__ = "0.0.0"

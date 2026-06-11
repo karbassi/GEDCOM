@@ -1,6 +1,6 @@
 # 06 — Individual + Personal Name
 
-Status: needs-triage
+Status: done
 Type: AFK
 
 ## Parent
