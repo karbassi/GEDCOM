@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from collections.abc import Iterator
 
+from ..extensions import registered_extension_uris
 from ..lines import Line
 from ..model import (
     Document,
@@ -35,6 +36,7 @@ from ._records import (
     source_lines,
     submitter_lines,
 )
+from ._substructures import extension_structure_lines
 
 
 def _typed_record_lines(record: Record, ctx: Context) -> Iterator[Line]:
@@ -58,6 +60,8 @@ def _typed_record_lines(record: Record, ctx: Context) -> Iterator[Line]:
 
 def _record_lines(record: Record, ctx: Context) -> Iterator[Line]:
     yield from _typed_record_lines(record, ctx)
+    for ext in record.extensions:
+        yield from extension_structure_lines(ext, 1)
     # CHANGE_DATE/CREATION_DATE come last for every record.
     yield from meta_lines(record.change_date, record.creation_date, ctx)
 
@@ -77,7 +81,10 @@ def serialize_document(document: Document, table: XrefTable) -> Iterator[Line]:
     """Yield the logical lines for a whole document, in document order."""
     ctx = Context(table=table, families=build_family_index(document))
     body = [line for record in document.records for line in _record_lines(record, ctx)]
-    schema_entries = _used_schema_entries(body, document.header.schema)
+    # Registered extension structures declare their authoritative URIs; an
+    # explicit header.schema entry overrides the registry default.
+    declared = {**registered_extension_uris(), **document.header.schema}
+    schema_entries = _used_schema_entries(body, declared)
     yield from header_lines(document.header, ctx, schema_entries)
     yield from body
     yield Line(0, "TRLR")

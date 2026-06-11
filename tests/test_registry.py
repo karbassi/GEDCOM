@@ -109,10 +109,24 @@ def test_packaged_spec_tables_match_vendored_registry() -> None:
     # The runtime copies under the package must stay byte-identical to the
     # vendored registry so validation can't drift from the documented source.
     packaged = _REGISTRY.parents[0] / "src" / "gedcom7" / "_spec"
-    for name in ("cardinalities.tsv", "substructures.tsv"):
+    for name in ("cardinalities.tsv", "substructures.tsv", "extension-structures.tsv"):
         assert (packaged / name).read_bytes() == (_REGISTRY / name).read_bytes(), (
             f"packaged {name} drifted from registry/{name}"
         )
+
+
+def test_registered_extensions_match_registry() -> None:
+    from collections import defaultdict
+
+    from gedcom7.extensions import registered_extension_uris
+
+    by_tag: dict[str, set[str]] = defaultdict(set)
+    with (_REGISTRY / "extension-structures.tsv").open(encoding="utf-8") as handle:
+        for row in csv.DictReader(handle, delimiter="\t"):
+            for tag in (row["tags"].split(",") if row["tags"] else []):
+                by_tag[tag].add(row["uri"])
+    expected = {tag: next(iter(uris)) for tag, uris in by_tag.items() if len(uris) == 1}
+    assert registered_extension_uris() == expected
 
 
 def test_event_tags_have_y_null_payload() -> None:

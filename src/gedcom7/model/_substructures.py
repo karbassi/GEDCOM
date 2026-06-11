@@ -240,3 +240,26 @@ class LdsOrdinanceDetail:
     def __post_init__(self) -> None:
         if self.status is not None and self.status_date is None:
             raise ValueError("an ordinance STAT requires a DATE")
+
+
+@dataclass(frozen=True)
+class ExtensionStructure:
+    """A registered `_`-prefixed extension structure (see :mod:`gedcom7.extensions`).
+
+    ``tag`` must be a supported registered extension tag; its URI is resolved
+    from the registry and auto-declared in ``HEAD.SCHMA``. ``children`` carries
+    nested extension substructures. Construction rejects an unregistered tag.
+    """
+
+    tag: str
+    value: str | None = None
+    children: tuple[ExtensionStructure, ...] = ()
+
+    def __post_init__(self) -> None:
+        from ..extensions import registered_extension_uris
+
+        if self.tag not in registered_extension_uris():
+            raise ValueError(
+                f"{self.tag!r} is not a registered extension structure; "
+                f"registered tags: {sorted(registered_extension_uris())}"
+            )

@@ -12,6 +12,7 @@ from ..model import (
     Crop,
     Event,
     EventDetail,
+    ExtensionStructure,
     File,
     Identifier,
     LdsOrdinanceDetail,
@@ -137,6 +138,12 @@ def note_lines(note: Note, level: int) -> Iterator[Line]:
         yield Line(level + 1, "LANG", note.language)
     for tran in note.translations:
         yield from note_translation_lines(tran, level + 1)
+
+
+def extension_structure_lines(ext: ExtensionStructure, level: int) -> Iterator[Line]:
+    yield Line(level, ext.tag, ext.value)
+    for child in ext.children:
+        yield from extension_structure_lines(child, level + 1)
 
 
 def identifier_lines(identifier: Identifier, level: int) -> Iterator[Line]:

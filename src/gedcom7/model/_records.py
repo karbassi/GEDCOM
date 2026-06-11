@@ -18,6 +18,7 @@ from ._substructures import (
     CallNumber,
     Crop,
     Event,
+    ExtensionStructure,
     File,
     Identifier,
     LdsOrdinanceDetail,
@@ -58,6 +59,7 @@ class RecordBase:
     xref_id: str | None = None
     change_date: ChangeDate | None = None
     creation_date: CreationDate | None = None
+    extensions: list[ExtensionStructure] = field(default_factory=list)
 
 
 @dataclass
