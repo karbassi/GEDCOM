@@ -22,9 +22,11 @@ from ..model import (
     SharedNote,
     Source,
     SourceCitation,
+    SourceData,
     SourceRepositoryCitation,
     Submitter,
 )
+from ..types import date_value_gedcom, text_list
 from ._context import Context
 from ._substructures import (
     address_lines,
@@ -39,6 +41,7 @@ from ._substructures import (
     note_translation_lines,
     ordinance_detail_lines,
     personal_name_lines,
+    place_lines,
 )
 
 
@@ -100,6 +103,7 @@ def shared_note_lines(record: SharedNote, ctx: Context) -> Iterator[Line]:
         yield Line(1, "LANG", record.language)
     for tran in record.translations:
         yield from note_translation_lines(tran, 1)
+    yield from _source_citations(record.source_citations, ctx, 1)
     yield from _identifier_lines(record.identifiers, 1)
 
 
@@ -121,8 +125,24 @@ def source_citation_lines(citation: SourceCitation, ctx: Context, level: int) ->
     yield Line(level, "SOUR", ctx.table.resolve(citation.source), is_pointer=True)
     if citation.page is not None:
         yield Line(level + 1, "PAGE", citation.page)
+    if citation.data_date is not None or citation.data_texts:
+        yield Line(level + 1, "DATA")
+        if citation.data_date is not None:
+            yield Line(level + 2, "DATE", date_value_gedcom(citation.data_date))
+        for text in citation.data_texts:
+            yield Line(level + 2, "TEXT", text)
+    if citation.event is not None:
+        yield Line(level + 1, "EVEN", citation.event)
+        if citation.event_phrase is not None:
+            yield Line(level + 2, "PHRASE", citation.event_phrase)
+        if citation.role is not None:
+            yield Line(level + 2, "ROLE", enum_value(citation.role, Role))
+            if citation.role_phrase is not None:
+                yield Line(level + 3, "PHRASE", citation.role_phrase)
     if citation.quality is not None:
         yield Line(level + 1, "QUAY", enum_value(citation.quality, Quality))
+    yield from _media_links(citation.media_links, ctx, level + 1)
+    yield from _note_lines(citation.notes, ctx, level + 1)
 
 
 def _source_citations(citations: list[SourceCitation], ctx: Context, level: int) -> Iterator[Line]:
@@ -148,6 +168,8 @@ def multimedia_lines(record: Multimedia, ctx: Context) -> Iterator[Line]:
     yield from _restriction_lines(record.restrictions, 1)
     for file in record.files:
         yield from file_lines(file, 1)
+    yield from _note_lines(record.notes, ctx, 1)
+    yield from _source_citations(record.source_citations, ctx, 1)
     yield from _identifier_lines(record.identifiers, 1)
 
 
@@ -161,8 +183,25 @@ def _repository_citation_lines(
             yield Line(level + 2, "MEDI", enum_value(call_number.medium, Medium))
 
 
+def source_data_lines(data: SourceData, ctx: Context, level: int) -> Iterator[Line]:
+    yield Line(level, "DATA")
+    for source_event in data.events:
+        yield Line(level + 1, "EVEN", text_list(source_event.events))
+        if source_event.date is not None:
+            yield Line(level + 2, "DATE", source_event.date.gedcom())
+            if source_event.date_phrase is not None:
+                yield Line(level + 3, "PHRASE", source_event.date_phrase)
+        if source_event.place is not None:
+            yield from place_lines(source_event.place, level + 2)
+    if data.agency is not None:
+        yield Line(level + 1, "AGNC", data.agency)
+    yield from _note_lines(data.notes, ctx, level + 1)
+
+
 def source_lines(record: Source, ctx: Context) -> Iterator[Line]:
     yield Line(0, "SOUR", xref=ctx.table.of(record))
+    if record.data is not None:
+        yield from source_data_lines(record.data, ctx, 1)
     if record.author is not None:
         yield Line(1, "AUTH", record.author)
     if record.title is not None:
@@ -173,9 +212,15 @@ def source_lines(record: Source, ctx: Context) -> Iterator[Line]:
         yield Line(1, "PUBL", record.publication)
     if record.text is not None:
         yield Line(1, "TEXT", record.text)
+        if record.text_mime is not None:
+            yield Line(2, "MIME", record.text_mime)
+        if record.text_language is not None:
+            yield Line(2, "LANG", record.text_language)
     for repository_citation in record.repository_citations:
         yield from _repository_citation_lines(repository_citation, ctx, 1)
     yield from _identifier_lines(record.identifiers, 1)
+    yield from _note_lines(record.notes, ctx, 1)
+    yield from _media_links(record.media_links, ctx, 1)
 
 
 def repository_lines(record: Repository, ctx: Context) -> Iterator[Line]:
@@ -184,6 +229,7 @@ def repository_lines(record: Repository, ctx: Context) -> Iterator[Line]:
     if record.address is not None:
         yield from address_lines(record.address, 1)
     yield from contact_lines(1, record.phones, record.emails, record.faxes, record.web_pages)
+    yield from _note_lines(record.notes, ctx, 1)
     yield from _identifier_lines(record.identifiers, 1)
 
 
@@ -193,6 +239,8 @@ def submitter_lines(record: Submitter, ctx: Context) -> Iterator[Line]:
     if record.address is not None:
         yield from address_lines(record.address, 1)
     yield from contact_lines(1, record.phones, record.emails, record.faxes, record.web_pages)
+    yield from _media_links(record.media_links, ctx, 1)
+    yield from _note_lines(record.notes, ctx, 1)
     yield from _identifier_lines(record.identifiers, 1)
 
 

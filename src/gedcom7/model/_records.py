@@ -10,7 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from ..enums import Quality, Restriction, Role, Sex
-from ..types import DateExact, Time
+from ..types import DateExact, DatePeriod, DateValue, Time
 from ._pointers import VoidPointer
 from ._substructures import (
     Address,
@@ -25,6 +25,7 @@ from ._substructures import (
     Note,
     NoteTranslation,
     PersonalName,
+    Place,
 )
 
 
@@ -53,6 +54,7 @@ class SharedNote:
     mime: str | None = None
     language: str | None = None
     translations: list[NoteTranslation] = field(default_factory=list)
+    source_citations: list[SourceCitation] = field(default_factory=list)
     identifiers: list[Identifier] = field(default_factory=list)
     change_date: ChangeDate | None = None
     creation_date: CreationDate | None = None
@@ -65,6 +67,8 @@ class Multimedia:
 
     files: list[File] = field(default_factory=list)
     restrictions: list[Restriction | str] = field(default_factory=list)
+    notes: list[Note | SharedNote] = field(default_factory=list)
+    source_citations: list[SourceCitation] = field(default_factory=list)
     identifiers: list[Identifier] = field(default_factory=list)
     change_date: ChangeDate | None = None
     creation_date: CreationDate | None = None
@@ -110,6 +114,8 @@ class Submitter:
     emails: list[str] = field(default_factory=list)
     faxes: list[str] = field(default_factory=list)
     web_pages: list[str] = field(default_factory=list)
+    media_links: list[MultimediaLink] = field(default_factory=list)
+    notes: list[Note | SharedNote] = field(default_factory=list)
     identifiers: list[Identifier] = field(default_factory=list)
     change_date: ChangeDate | None = None
     creation_date: CreationDate | None = None
@@ -175,6 +181,7 @@ class Repository:
     emails: list[str] = field(default_factory=list)
     faxes: list[str] = field(default_factory=list)
     web_pages: list[str] = field(default_factory=list)
+    notes: list[Note | SharedNote] = field(default_factory=list)
     identifiers: list[Identifier] = field(default_factory=list)
     change_date: ChangeDate | None = None
     creation_date: CreationDate | None = None
@@ -190,6 +197,25 @@ class SourceRepositoryCitation:
 
 
 @dataclass
+class SourceDataEvent:
+    """An event the source records data about (`SOUR.DATA.EVEN`)."""
+
+    events: list[str]
+    date: DatePeriod | None = None
+    date_phrase: str | None = None
+    place: Place | None = None
+
+
+@dataclass
+class SourceData:
+    """Data the source provides (`SOUR.DATA`)."""
+
+    events: list[SourceDataEvent] = field(default_factory=list)
+    agency: str | None = None
+    notes: list[Note | SharedNote] = field(default_factory=list)
+
+
+@dataclass
 class Source:
     """A citable source of genealogical information (`SOUR`)."""
 
@@ -198,7 +224,12 @@ class Source:
     abbreviation: str | None = None
     publication: str | None = None
     text: str | None = None
+    text_mime: str | None = None
+    text_language: str | None = None
+    data: SourceData | None = None
     repository_citations: list[SourceRepositoryCitation] = field(default_factory=list)
+    notes: list[Note | SharedNote] = field(default_factory=list)
+    media_links: list[MultimediaLink] = field(default_factory=list)
     identifiers: list[Identifier] = field(default_factory=list)
     change_date: ChangeDate | None = None
     creation_date: CreationDate | None = None
@@ -215,7 +246,15 @@ class SourceCitation:
 
     source: Source | VoidPointer
     page: str | None = None
+    data_date: DateValue | None = None
+    data_texts: list[str] = field(default_factory=list)
+    event: str | None = None
+    event_phrase: str | None = None
+    role: Role | str | None = None
+    role_phrase: str | None = None
     quality: Quality | str | None = None
+    notes: list[Note | SharedNote] = field(default_factory=list)
+    media_links: list[MultimediaLink] = field(default_factory=list)
 
 
 @dataclass

@@ -47,3 +47,47 @@ def test_void_source_citation() -> None:
     )
     out = dumps(Document(records=[indi]))
     assert "1 SOUR @VOID@\n2 PAGE family bible\n" in out
+
+
+def test_source_data_and_text_mime() -> None:
+    from gedcom7 import Source, SourceData, SourceDataEvent
+    from gedcom7.types import CalendarDate, DatePeriod
+
+    src = Source(
+        text="extract",
+        text_mime="text/plain",
+        data=SourceData(
+            events=[
+                SourceDataEvent(
+                    ["BIRT", "DEAT"],
+                    date=DatePeriod(CalendarDate(1900), CalendarDate(1950)),
+                )
+            ],
+            agency="County",
+        ),
+    )
+    out = dumps(Document(records=[src]))
+    assert (
+        "0 @S1@ SOUR\n1 DATA\n2 EVEN BIRT, DEAT\n3 DATE FROM 1900 TO 1950\n2 AGNC County\n" in out
+    )
+    assert "1 TEXT extract\n2 MIME text/plain\n" in out
+
+
+def test_citation_data_event_role() -> None:
+    from gedcom7 import Individual, PersonalName, Source, SourceCitation
+    from gedcom7.enums import Role
+
+    src = Source(title="Census")
+    indi = Individual(
+        names=[PersonalName("X //")],
+        source_citations=[
+            SourceCitation(
+                src,
+                data_texts=["aged 40"],
+                event="CENS",
+                role=Role.WITNESS,
+            )
+        ],
+    )
+    out = dumps(Document(records=[indi, src]))
+    assert "1 SOUR @S1@\n2 DATA\n3 TEXT aged 40\n2 EVEN CENS\n3 ROLE WITN\n" in out

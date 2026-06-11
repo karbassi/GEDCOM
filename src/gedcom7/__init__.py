@@ -42,6 +42,8 @@ from .model import (
     SharedNote,
     Source,
     SourceCitation,
+    SourceData,
+    SourceDataEvent,
     SourceRepositoryCitation,
     Submitter,
 )
@@ -84,6 +86,8 @@ __all__ = [
     "SharedNote",
     "Source",
     "SourceCitation",
+    "SourceData",
+    "SourceDataEvent",
     "SourceRepositoryCitation",
     "Submitter",
     "ValidationError",
