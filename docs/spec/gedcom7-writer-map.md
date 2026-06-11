@@ -204,7 +204,7 @@ This is the design hypothesis, not yet locked. It separates three concerns: an *
 
 ### 7.1 Layering
 
-1. **`model/`** — frozen `dataclasses` mirroring the spec's records and reusable substructure blocks (`Individual`, `Family`, `Multimedia`, `Repository`, `Source`, `SharedNote`, `Submitter`, `Header`; blocks like `PlaceStructure`, `SourceCitation`, `PersonalName`, `Address`, `EventDetail`, `Date`, `Age`, …). Pointers are typed cross-reference handles, not raw strings.
+1. **`model/`** — `dataclasses` mirroring the spec's records and reusable substructure blocks (`Individual`, `Family`, `Multimedia`, `Repository`, `Source`, `SharedNote`, `Submitter`, `Header`; blocks like `PlaceStructure`, `SourceCitation`, `PersonalName`, `Address`, `EventDetail`, `Date`, `Age`, …). **Record types are mutable; value/datatype types are frozen** (ADR-0003). Records link to one another by **object reference**, not xref strings (ADR-0001).
 2. **Datatype serializers** (`types.py`) — pure functions `Date → str`, `Age → str`, `Latitude → str`, list joining, etc. Each maps 1:1 to a §2 type.
 3. **`gedcom_lines.py`** — the universal `Line(level, xref, tag, value)` primitive and the line-emitter that handles delimiters, the leading-`@` escape, `CONT` splitting, chosen EOL, and the BOM. This is the only place that knows the §1 grammar.
 4. **`writer.py` / structure tree** — walks the model, allocates/validates xref ids, orders substructures per the rules, and produces a flat sequence of `Line`s that the line-emitter renders.
@@ -218,12 +218,16 @@ This is the design hypothesis, not yet locked. It separates three concerns: an *
 - Frozen dataclasses keep the public surface dependency-free and let consumers build models without our validation getting in the way until serialize-time.
 - Validation is a separate pass so a "best effort" mode can warn-and-emit while a strict mode raises.
 
-### 7.3 Open questions for grilling
+### 7.3 Resolved decisions (from `/grill-with-docs`)
 
-- Terminology: do we name model classes after GEDCOM tags (`INDI`) or domain words (`Individual`)? (Glossary decision for CONTEXT.md.)
-- How are xref ids assigned — caller-provided, auto-generated, or hybrid? Are pointers object references resolved at write time, or pre-assigned ids?
-- Are records held in a `Document`/`Dataset` aggregate that owns the xref namespace and the submitter default?
-- How much validation is enforced at construction vs at serialize time?
-- Extension support surface: do we model `SCHMA`/extension tags in v1, or defer?
-- Do we ship a typed enum (`Sex`, `Role`, …) per enum set, or accept strings with validation?
+| Decision | Resolution | Where |
+|---|---|---|
+| Model naming | **Domain words** (`Individual`, `Family`, …); wire tag is an internal encoding detail. | CONTEXT.md |
+| Top-level aggregate | A **`Document`** owns Header + records + the xref namespace; it is the unit you serialize. | CONTEXT.md |
+| Linking & xref ids | **Object references**; writer auto-assigns `@xref@` at serialize time (optional per-record override); bidirectional `FAMS`/`FAMC` integrity is **derived**. | ADR-0001 |
+| Validation | **Two-tier**: value invariants at construction (via value types), document-level rules in a serialize-time pass. **Strict by default**, lenient opt-in. | ADR-0002 |
+| Mutability | **Value types frozen, record types mutable** (to allow reference cycles like `BIRT.FAMC` ⇄ `CHIL`). | ADR-0003 |
+| Enums | **Typed enums per set** + a `_`-prefixed extension escape hatch. | CONTEXT.md / model |
+| Extensions (v1) | **Minimal**: extension enum values + auto-emitted `HEAD.SCHMA`; custom extension records/substructures **deferred** past v1. | PRD scope |
+| Output API | `dumps(doc) -> str` convenience + `dump(doc, path_or_stream)` writing canonical UTF-8 bytes (BOM + chosen EOL); byte stream is authoritative. | model/writer |
 ```
