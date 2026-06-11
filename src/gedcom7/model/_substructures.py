@@ -90,6 +90,28 @@ class Address:
 
 
 @dataclass
+class NoteTranslation:
+    """A translated form of a note (`NOTE.TRAN`/`SNOTE.TRAN`).
+
+    Must carry a ``mime`` and/or a ``language``.
+    """
+
+    text: str
+    mime: str | None = None
+    language: str | None = None
+
+
+@dataclass
+class Note:
+    """An inline note (`NOTE`) with its text carried directly."""
+
+    text: str
+    mime: str | None = None
+    language: str | None = None
+    translations: list[NoteTranslation] = field(default_factory=list)
+
+
+@dataclass
 class CallNumber:
     """A repository call number (`CALN`) with an optional medium (`MEDI`)."""
 

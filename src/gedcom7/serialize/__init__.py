@@ -17,6 +17,7 @@ from ..model import (
     Multimedia,
     Record,
     Repository,
+    SharedNote,
     Source,
     Submitter,
 )
@@ -29,6 +30,7 @@ from ._records import (
     individual_lines,
     multimedia_lines,
     repository_lines,
+    shared_note_lines,
     source_lines,
     submitter_lines,
 )
@@ -47,6 +49,8 @@ def _record_lines(record: Record, ctx: Context) -> Iterator[Line]:
         yield from repository_lines(record, ctx)
     elif isinstance(record, Multimedia):
         yield from multimedia_lines(record, ctx)
+    elif isinstance(record, SharedNote):
+        yield from shared_note_lines(record, ctx)
     else:
         raise TypeError(f"no serializer for record type {type(record).__name__}")
 

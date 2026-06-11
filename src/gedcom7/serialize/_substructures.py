@@ -17,6 +17,8 @@ from ..model import (
     LdsOrdinanceDetail,
     NamePieces,
     NonEvent,
+    Note,
+    NoteTranslation,
     PersonalName,
     Place,
 )
@@ -117,6 +119,24 @@ def crop_lines(crop: Crop, level: int) -> Iterator[Line]:
     ):
         if value is not None:
             yield Line(level + 1, tag, integer(value))
+
+
+def note_translation_lines(tran: NoteTranslation, level: int) -> Iterator[Line]:
+    yield Line(level, "TRAN", tran.text)
+    if tran.mime is not None:
+        yield Line(level + 1, "MIME", tran.mime)
+    if tran.language is not None:
+        yield Line(level + 1, "LANG", tran.language)
+
+
+def note_lines(note: Note, level: int) -> Iterator[Line]:
+    yield Line(level, "NOTE", note.text)
+    if note.mime is not None:
+        yield Line(level + 1, "MIME", note.mime)
+    if note.language is not None:
+        yield Line(level + 1, "LANG", note.language)
+    for tran in note.translations:
+        yield from note_translation_lines(tran, level + 1)
 
 
 def identifier_lines(identifier: Identifier, level: int) -> Iterator[Line]:

@@ -16,7 +16,16 @@ from __future__ import annotations
 from collections.abc import Iterator
 from dataclasses import dataclass
 
-from .model import Document, Family, Individual, Multimedia, Submitter, VoidPointer
+from .model import (
+    Document,
+    Family,
+    Individual,
+    Multimedia,
+    Note,
+    SharedNote,
+    Submitter,
+    VoidPointer,
+)
 
 
 class ValidationError(ValueError):
@@ -54,6 +63,13 @@ def _issues(document: Document) -> Iterator[Issue]:
                 if not file.form:
                     yield Issue("every OBJE.FILE requires a non-empty FORM")
 
+        if isinstance(record, SharedNote):
+            yield from _note_translation_issues(record)
+
+        for note in getattr(record, "notes", []):
+            if isinstance(note, Note):
+                yield from _note_translation_issues(note)
+
         if isinstance(record, Family):
             yield from _family_issues(record, known)
 
@@ -88,6 +104,12 @@ def _event_attribute_issues(record: Individual | Family) -> Iterator[Issue]:
     for attribute in record.attributes:
         if attribute.tag in _TYPE_REQUIRED_ATTRIBUTES and attribute.type is None:
             yield Issue(f"{attribute.tag} requires a TYPE")
+
+
+def _note_translation_issues(note: Note | SharedNote) -> Iterator[Issue]:
+    for tran in note.translations:
+        if tran.mime is None and tran.language is None:
+            yield Issue("a note TRAN requires a MIME and/or a LANG")
 
 
 def _family_issues(family: Family, known: set[int]) -> Iterator[Issue]:

@@ -21,8 +21,22 @@ from ._substructures import (
     Identifier,
     LdsOrdinanceDetail,
     NonEvent,
+    Note,
+    NoteTranslation,
     PersonalName,
 )
+
+
+@dataclass
+class SharedNote:
+    """A reusable note record (`SNOTE`) pointed to by other structures."""
+
+    text: str
+    mime: str | None = None
+    language: str | None = None
+    translations: list[NoteTranslation] = field(default_factory=list)
+    identifiers: list[Identifier] = field(default_factory=list)
+    xref_id: str | None = None
 
 
 @dataclass
@@ -87,6 +101,7 @@ class Individual:
     events: list[Event] = field(default_factory=list)
     non_events: list[NonEvent] = field(default_factory=list)
     lds_ordinances: list[LdsIndividualOrdinance] = field(default_factory=list)
+    notes: list[Note | SharedNote] = field(default_factory=list)
     source_citations: list[SourceCitation] = field(default_factory=list)
     media_links: list[MultimediaLink] = field(default_factory=list)
     identifiers: list[Identifier] = field(default_factory=list)
@@ -110,6 +125,7 @@ class Family:
     events: list[Event] = field(default_factory=list)
     non_events: list[NonEvent] = field(default_factory=list)
     sealings: list[LdsSpouseSealing] = field(default_factory=list)
+    notes: list[Note | SharedNote] = field(default_factory=list)
     source_citations: list[SourceCitation] = field(default_factory=list)
     media_links: list[MultimediaLink] = field(default_factory=list)
     identifiers: list[Identifier] = field(default_factory=list)

@@ -14,7 +14,9 @@ from ..model import (
     LdsSpouseSealing,
     Multimedia,
     MultimediaLink,
+    Note,
     Repository,
+    SharedNote,
     Source,
     SourceCitation,
     SourceRepositoryCitation,
@@ -30,6 +32,8 @@ from ._substructures import (
     file_lines,
     identifier_lines,
     non_event_lines,
+    note_lines,
+    note_translation_lines,
     ordinance_detail_lines,
     personal_name_lines,
 )
@@ -38,6 +42,25 @@ from ._substructures import (
 def _identifier_lines(identifiers: list[Identifier], level: int) -> Iterator[Line]:
     for identifier in identifiers:
         yield from identifier_lines(identifier, level)
+
+
+def _note_lines(notes: list[Note | SharedNote], ctx: Context, level: int) -> Iterator[Line]:
+    for note in notes:
+        if isinstance(note, SharedNote):
+            yield Line(level, "SNOTE", ctx.table.of(note), is_pointer=True)
+        else:
+            yield from note_lines(note, level)
+
+
+def shared_note_lines(record: SharedNote, ctx: Context) -> Iterator[Line]:
+    yield Line(0, "SNOTE", record.text, xref=ctx.table.of(record))
+    if record.mime is not None:
+        yield Line(1, "MIME", record.mime)
+    if record.language is not None:
+        yield Line(1, "LANG", record.language)
+    for tran in record.translations:
+        yield from note_translation_lines(tran, 1)
+    yield from _identifier_lines(record.identifiers, 1)
 
 
 def _ordinance_lines(ordinance: LdsIndividualOrdinance, ctx: Context, level: int) -> Iterator[Line]:
@@ -151,6 +174,7 @@ def individual_lines(record: Individual, ctx: Context) -> Iterator[Line]:
         yield Line(1, "FAMC", ctx.table.of(family), is_pointer=True)
     for family in ctx.families.spouse_families(record):
         yield Line(1, "FAMS", ctx.table.of(family), is_pointer=True)
+    yield from _note_lines(record.notes, ctx, 1)
     yield from _identifier_lines(record.identifiers, 1)
     yield from _source_citations(record.source_citations, ctx, 1)
     yield from _media_links(record.media_links, ctx, 1)
@@ -172,6 +196,7 @@ def family_lines(record: Family, ctx: Context) -> Iterator[Line]:
         yield Line(1, "CHIL", ctx.table.resolve(child), is_pointer=True)
     for sealing in record.sealings:
         yield from _sealing_lines(sealing, 1)
+    yield from _note_lines(record.notes, ctx, 1)
     yield from _identifier_lines(record.identifiers, 1)
     yield from _source_citations(record.source_citations, ctx, 1)
     yield from _media_links(record.media_links, ctx, 1)

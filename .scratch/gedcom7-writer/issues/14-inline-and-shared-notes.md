@@ -1,6 +1,6 @@
 # 14 — Inline Notes + Shared Note records
 
-Status: needs-triage
+Status: done
 Type: AFK
 
 ## Parent

@@ -16,6 +16,7 @@ from .model import (
     Multimedia,
     Record,
     Repository,
+    SharedNote,
     Source,
     Submitter,
     VoidPointer,
@@ -30,6 +31,7 @@ _PREFIXES: list[tuple[type, str]] = [
     (Source, "S"),
     (Repository, "R"),
     (Multimedia, "O"),
+    (SharedNote, "N"),
     (Submitter, "U"),
 ]
 
