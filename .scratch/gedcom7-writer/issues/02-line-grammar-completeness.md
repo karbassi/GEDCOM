@@ -1,6 +1,6 @@
 # 02 — Line-grammar completeness
 
-Status: needs-triage
+Status: done
 Type: AFK
 
 ## Parent

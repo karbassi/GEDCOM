@@ -16,6 +16,7 @@ class Header:
     """Document metadata pseudo-record (`HEAD`)."""
 
     gedcom_version: str = "7.0"
+    copyright: str | None = None
 
 
 @dataclass

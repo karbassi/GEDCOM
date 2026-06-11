@@ -15,8 +15,11 @@ from .model import Document
 
 def serialize_document(document: Document) -> Iterator[Line]:
     """Yield the logical lines for a whole document, in document order."""
+    header = document.header
     yield Line(0, "HEAD")
     yield Line(1, "GEDC")
-    yield Line(2, "VERS", document.header.gedcom_version)
+    yield Line(2, "VERS", header.gedcom_version)
+    if header.copyright is not None:
+        yield Line(1, "COPR", header.copyright)
     # Records are emitted here as record types are added (slices 05+).
     yield Line(0, "TRLR")
