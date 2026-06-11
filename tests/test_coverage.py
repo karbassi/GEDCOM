@@ -69,6 +69,7 @@ from gedcom7.enums import (
     Sex,
 )
 from gedcom7.types import (
+    Age,
     CalendarDate,
     DateExact,
     DatePeriod,
@@ -84,8 +85,6 @@ EXCLUSIONS = {
     "ADR1": "deprecated address line; intentionally never emitted (ADR-only ADDR)",
     "ADR2": "deprecated address line; intentionally never emitted",
     "ADR3": "deprecated address line; intentionally never emitted",
-    "AGE": "HUSB/WIFE age within a family event (event-level HUSB.AGE) is unmodeled",
-    "SDATE": "sort-date substructure is unmodeled",
 }
 
 _INDIVIDUAL_EVENTS = [
@@ -158,6 +157,12 @@ def _maximal_document() -> Document:
         ),
         address=Address("a", city="c"), phones=["p"], emails=["e"], faxes=["f"],
         web_pages=["w"], agency="ag", religion="rel", cause="ca",
+        age=Age(years=72), age_phrase="abt",
+        sort_date=CalendarDate(1850), sort_date_time=Time(1, 2), sort_date_phrase="sp",
+    )  # fmt: skip
+    fam_detail = EventDetail(
+        husband_age=Age(years=30), husband_age_phrase="hp",
+        wife_age=Age(years=28, bound=">"), wife_age_phrase="wp",
     )  # fmt: skip
     spouse = Individual(names=[PersonalName("Sp //")])
     child = Individual(names=[PersonalName("Ch //")])
@@ -267,7 +272,7 @@ def _maximal_document() -> Document:
             ),
         ],
         events=[
-            Event("MARR", occurred=True, detail=detail),
+            Event("MARR", occurred=True, detail=fam_detail),
             Event("DIV", occurred=True),
             *(Event(t, occurred=True) for t in _FAMILY_EVENTS),
         ],

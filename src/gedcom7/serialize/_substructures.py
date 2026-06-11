@@ -163,6 +163,25 @@ def event_detail_lines(detail: EventDetail, level: int, ctx: Context) -> Iterato
             yield Line(level + 1, "TIME", detail.date_time.gedcom())
         if detail.date_phrase is not None:
             yield Line(level + 1, "PHRASE", detail.date_phrase)
+    if detail.sort_date is not None:
+        yield Line(level, "SDATE", date_value_gedcom(detail.sort_date))
+        if detail.sort_date_time is not None:
+            yield Line(level + 1, "TIME", detail.sort_date_time.gedcom())
+        if detail.sort_date_phrase is not None:
+            yield Line(level + 1, "PHRASE", detail.sort_date_phrase)
+    if detail.age is not None:
+        yield Line(level, "AGE", detail.age.gedcom())
+        if detail.age_phrase is not None:
+            yield Line(level + 1, "PHRASE", detail.age_phrase)
+    for tag, age, phrase in (
+        ("HUSB", detail.husband_age, detail.husband_age_phrase),
+        ("WIFE", detail.wife_age, detail.wife_age_phrase),
+    ):
+        if age is not None:
+            yield Line(level, tag)
+            yield Line(level + 1, "AGE", age.gedcom())
+            if phrase is not None:
+                yield Line(level + 2, "PHRASE", phrase)
     if detail.place is not None:
         yield from place_lines(detail.place, level)
     if detail.address is not None:

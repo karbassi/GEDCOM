@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from ..enums import AdoptingParent, ExidType, Medium, NameType, OrdinanceStatus
-from ..types import DateExact, DatePeriod, DateValue, Latitude, Longitude, Time
+from ..types import Age, DateExact, DatePeriod, DateValue, Latitude, Longitude, Time
 
 if TYPE_CHECKING:
     from ._records import Family
@@ -187,6 +187,18 @@ class EventDetail:
     family_child: Family | None = None  # FAMC
     adopting_parent: AdoptingParent | str | None = None  # ADOP.FAMC.ADOP
     adopting_parent_phrase: str | None = None
+    # Age of the subject at an individual event (e.g. DEAT.AGE).
+    age: Age | None = None  # AGE
+    age_phrase: str | None = None
+    # Spouse ages at a family event (HUSB.AGE / WIFE.AGE).
+    husband_age: Age | None = None
+    husband_age_phrase: str | None = None
+    wife_age: Age | None = None
+    wife_age_phrase: str | None = None
+    # Sort date used to order events when the real date is unknown/ambiguous.
+    sort_date: DateValue | None = None  # SDATE
+    sort_date_time: Time | None = None
+    sort_date_phrase: str | None = None
 
 
 @dataclass
