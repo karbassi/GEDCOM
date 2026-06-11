@@ -1,6 +1,6 @@
 # 11 — LDS ordinances
 
-Status: needs-triage
+Status: done
 Type: AFK
 
 ## Parent

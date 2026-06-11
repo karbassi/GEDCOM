@@ -16,9 +16,30 @@ from ._substructures import (
     Attribute,
     Event,
     Identifier,
+    LdsOrdinanceDetail,
     NonEvent,
     PersonalName,
 )
+
+
+@dataclass
+class LdsIndividualOrdinance:
+    """An individual LDS ordinance (`BAPL`/`CONL`/`ENDL`/`INIL`/`SLGC`).
+
+    ``SLGC`` (sealing child to parents) requires ``family`` (`FAMC`); the
+    others do not use it.
+    """
+
+    tag: str
+    detail: LdsOrdinanceDetail | None = None
+    family: Family | None = None
+
+
+@dataclass
+class LdsSpouseSealing:
+    """A spouse sealing (`SLGS`), a family-level LDS ordinance."""
+
+    detail: LdsOrdinanceDetail | None = None
 
 
 @dataclass
@@ -44,6 +65,7 @@ class Individual:
     attributes: list[Attribute] = field(default_factory=list)
     events: list[Event] = field(default_factory=list)
     non_events: list[NonEvent] = field(default_factory=list)
+    lds_ordinances: list[LdsIndividualOrdinance] = field(default_factory=list)
     identifiers: list[Identifier] = field(default_factory=list)
     xref_id: str | None = None
 
@@ -64,5 +86,6 @@ class Family:
     attributes: list[Attribute] = field(default_factory=list)
     events: list[Event] = field(default_factory=list)
     non_events: list[NonEvent] = field(default_factory=list)
+    sealings: list[LdsSpouseSealing] = field(default_factory=list)
     identifiers: list[Identifier] = field(default_factory=list)
     xref_id: str | None = None

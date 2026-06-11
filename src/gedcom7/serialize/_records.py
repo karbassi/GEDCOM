@@ -6,7 +6,14 @@ from collections.abc import Iterator
 
 from ..enums import Sex, enum_value
 from ..lines import Line
-from ..model import Family, Identifier, Individual, Submitter
+from ..model import (
+    Family,
+    Identifier,
+    Individual,
+    LdsIndividualOrdinance,
+    LdsSpouseSealing,
+    Submitter,
+)
 from ._context import Context
 from ._substructures import (
     address_lines,
@@ -15,6 +22,7 @@ from ._substructures import (
     event_lines,
     identifier_lines,
     non_event_lines,
+    ordinance_detail_lines,
     personal_name_lines,
 )
 
@@ -22,6 +30,20 @@ from ._substructures import (
 def _identifier_lines(identifiers: list[Identifier], level: int) -> Iterator[Line]:
     for identifier in identifiers:
         yield from identifier_lines(identifier, level)
+
+
+def _ordinance_lines(ordinance: LdsIndividualOrdinance, ctx: Context, level: int) -> Iterator[Line]:
+    yield Line(level, ordinance.tag)
+    if ordinance.detail is not None:
+        yield from ordinance_detail_lines(ordinance.detail, level + 1)
+    if ordinance.family is not None:
+        yield Line(level + 1, "FAMC", ctx.table.of(ordinance.family), is_pointer=True)
+
+
+def _sealing_lines(sealing: LdsSpouseSealing, level: int) -> Iterator[Line]:
+    yield Line(level, "SLGS")
+    if sealing.detail is not None:
+        yield from ordinance_detail_lines(sealing.detail, level + 1)
 
 
 def submitter_lines(record: Submitter, ctx: Context) -> Iterator[Line]:
@@ -45,6 +67,8 @@ def individual_lines(record: Individual, ctx: Context) -> Iterator[Line]:
         yield from event_lines(event, 1)
     for non_event in record.non_events:
         yield from non_event_lines(non_event, 1)
+    for ordinance in record.lds_ordinances:
+        yield from _ordinance_lines(ordinance, ctx, 1)
     # Derived family memberships (ADR-0001).
     for family in ctx.families.child_families(record):
         yield Line(1, "FAMC", ctx.table.of(family), is_pointer=True)
@@ -67,4 +91,6 @@ def family_lines(record: Family, ctx: Context) -> Iterator[Line]:
         yield Line(1, "WIFE", ctx.table.of(record.wife), is_pointer=True)
     for child in record.children:
         yield Line(1, "CHIL", ctx.table.resolve(child), is_pointer=True)
+    for sealing in record.sealings:
+        yield from _sealing_lines(sealing, 1)
     yield from _identifier_lines(record.identifiers, 1)

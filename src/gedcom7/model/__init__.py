@@ -10,13 +10,20 @@ from __future__ import annotations
 
 from ._document import Document, Header, Record
 from ._pointers import VOID, VoidPointer
-from ._records import Family, Individual, Submitter
+from ._records import (
+    Family,
+    Individual,
+    LdsIndividualOrdinance,
+    LdsSpouseSealing,
+    Submitter,
+)
 from ._substructures import (
     Address,
     Attribute,
     Event,
     EventDetail,
     Identifier,
+    LdsOrdinanceDetail,
     Map,
     NamePieces,
     NameTranslation,
@@ -37,6 +44,9 @@ __all__ = [
     "Header",
     "Identifier",
     "Individual",
+    "LdsIndividualOrdinance",
+    "LdsOrdinanceDetail",
+    "LdsSpouseSealing",
     "Map",
     "NamePieces",
     "NameTranslation",

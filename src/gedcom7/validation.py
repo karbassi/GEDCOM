@@ -53,6 +53,11 @@ def _issues(document: Document) -> Iterator[Issue]:
         if isinstance(record, Individual | Family):
             yield from _event_attribute_issues(record)
 
+        if isinstance(record, Individual):
+            for ordinance in record.lds_ordinances:
+                if ordinance.tag == "SLGC" and ordinance.family is None:
+                    yield Issue("SLGC requires a FAMC pointing to the sealed family")
+
         identifiers = getattr(record, "identifiers", [])
         for identifier in identifiers:
             if identifier.kind == "EXID" and identifier.type is None:

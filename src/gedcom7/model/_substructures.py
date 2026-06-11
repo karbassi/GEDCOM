@@ -6,8 +6,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from ..enums import NameType
-from ..types import DatePeriod, DateValue, Latitude, Longitude, Time
+from ..enums import NameType, OrdinanceStatus
+from ..types import DateExact, DatePeriod, DateValue, Latitude, Longitude, Time
 
 
 @dataclass(frozen=True)
@@ -158,3 +158,25 @@ class NonEvent:
     event: str
     date: DatePeriod | None = None
     date_phrase: str | None = None
+
+
+@dataclass
+class LdsOrdinanceDetail:
+    """Shared detail for an LDS ordinance (`LDS_ORDINANCE_DETAIL`).
+
+    If ``status`` is set, ``status_date`` is required. Ordinance dates use
+    the Gregorian calendar and should be 1830 or later.
+    """
+
+    date: DateValue | None = None
+    date_time: Time | None = None
+    date_phrase: str | None = None
+    temple: str | None = None  # TEMP
+    place: Place | None = None
+    status: OrdinanceStatus | str | None = None  # STAT
+    status_date: DateExact | None = None
+    status_time: Time | None = None
+
+    def __post_init__(self) -> None:
+        if self.status is not None and self.status_date is None:
+            raise ValueError("an ordinance STAT requires a DATE")

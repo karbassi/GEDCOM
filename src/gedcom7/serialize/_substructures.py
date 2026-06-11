@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Iterator
 
-from ..enums import NameType, enum_value
+from ..enums import NameType, OrdinanceStatus, enum_value
 from ..lines import Line
 from ..model import (
     Address,
@@ -12,6 +12,7 @@ from ..model import (
     Event,
     EventDetail,
     Identifier,
+    LdsOrdinanceDetail,
     NamePieces,
     NonEvent,
     PersonalName,
@@ -141,3 +142,23 @@ def non_event_lines(non_event: NonEvent, level: int) -> Iterator[Line]:
         yield Line(level + 1, "DATE", non_event.date.gedcom())
         if non_event.date_phrase is not None:
             yield Line(level + 2, "PHRASE", non_event.date_phrase)
+
+
+def ordinance_detail_lines(detail: LdsOrdinanceDetail, level: int) -> Iterator[Line]:
+    if detail.date is not None:
+        yield Line(level, "DATE", date_value_gedcom(detail.date))
+        if detail.date_time is not None:
+            yield Line(level + 1, "TIME", detail.date_time.gedcom())
+        if detail.date_phrase is not None:
+            yield Line(level + 1, "PHRASE", detail.date_phrase)
+    if detail.temple is not None:
+        yield Line(level, "TEMP", detail.temple)
+    if detail.place is not None:
+        yield from place_lines(detail.place, level)
+    if detail.status is not None:
+        yield Line(level, "STAT", enum_value(detail.status, OrdinanceStatus))
+        # STAT requires DATE (enforced at construction).
+        assert detail.status_date is not None
+        yield Line(level + 1, "DATE", detail.status_date.gedcom())
+        if detail.status_time is not None:
+            yield Line(level + 2, "TIME", detail.status_time.gedcom())
