@@ -1,6 +1,6 @@
 # 05 — Submitter record + xref allocation + Header pointer
 
-Status: needs-triage
+Status: done
 Type: AFK
 
 ## Parent

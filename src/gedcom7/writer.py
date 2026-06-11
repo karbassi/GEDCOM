@@ -9,13 +9,15 @@ from typing import IO
 from .lines import render
 from .model import Document
 from .serialize import serialize_document
+from .xref import build_xref_table
 
 _BOM = "﻿"
 
 
 def dumps(document: Document, *, eol: str = "\n") -> str:
     """Serialize a document to a GEDCOM 7 string (no BOM)."""
-    return render(serialize_document(document), eol=eol)
+    table = build_xref_table(document)
+    return render(serialize_document(document, table), eol=eol)
 
 
 def dump(
