@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from gedcom7.cardinality import Rule, build_rules, load_rules
+from gedcom7.cardinality import Rule, build_rules, check_tree, load_rules
 
 V7 = "https://gedcom.io/terms/v7/"
 
@@ -43,3 +43,37 @@ def test_load_rules_covers_emitted_structures() -> None:
     assert file_rule.required and file_rule.maximum is None
     # The level-0 record set is present.
     assert {"INDI", "FAM", "OBJE", "SOUR", "REPO", "SNOTE", "SUBM"} <= rules.top_level_tags
+
+
+def test_check_tree_flags_missing_required() -> None:
+    rules = load_rules()
+    # An OBJE record (level 0) with no FILE substructure.
+    violations = list(check_tree([(0, "OBJE")], rules))
+    assert any(v.child_tag == "FILE" and v.found == 0 for v in violations)
+    assert "OBJE requires at least 1 FILE but has 0" in {v.message for v in violations}
+
+
+def test_check_tree_flags_over_repeated_singular() -> None:
+    rules = load_rules()
+    # HEAD permits exactly one GEDC; emit two (plus their required VERS).
+    stream = [
+        (0, "HEAD"),
+        (1, "GEDC"), (2, "VERS"),
+        (1, "GEDC"), (2, "VERS"),
+    ]  # fmt: skip
+    over = [v for v in check_tree(stream, rules) if v.child_tag == "GEDC"]
+    assert over and over[0].found == 2 and over[0].maximum == 1
+    assert over[0].message == "HEAD allows at most 1 GEDC but has 2"
+
+
+def test_check_tree_clean_for_valid_minimal_tree() -> None:
+    rules = load_rules()
+    stream = [(0, "HEAD"), (1, "GEDC"), (2, "VERS"), (0, "TRLR")]
+    assert list(check_tree(stream, rules)) == []
+
+
+def test_check_tree_skips_unresolved_extension_subtree() -> None:
+    rules = load_rules()
+    # An unknown extension structure and its children are skipped, not flagged.
+    stream = [(0, "HEAD"), (1, "GEDC"), (2, "VERS"), (1, "_X"), (2, "_Y")]
+    assert list(check_tree(stream, rules)) == []

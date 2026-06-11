@@ -16,6 +16,7 @@ from __future__ import annotations
 from collections.abc import Iterator
 from dataclasses import dataclass
 
+from .cardinality import check_tree, load_rules
 from .model import (
     Document,
     Family,
@@ -26,6 +27,8 @@ from .model import (
     Submitter,
     VoidPointer,
 )
+from .serialize import serialize_document
+from .xref import XrefError, build_xref_table
 
 
 class ValidationError(ValueError):
@@ -88,6 +91,19 @@ def _issues(document: Document) -> Iterator[Issue]:
                     "EXID without a TYPE is deprecated (TYPE becomes required in 8.0)",
                     is_error=False,
                 )
+
+    yield from _cardinality_issues(document)
+
+
+def _cardinality_issues(document: Document) -> Iterator[Issue]:
+    """Check the emitted structure tree against the spec cardinality rules."""
+    try:
+        lines = list(serialize_document(document, build_xref_table(document)))
+    except XrefError:
+        return  # reference rules above already report the underlying problem
+    stream = ((line.level, line.tag) for line in lines)
+    for violation in check_tree(stream, load_rules()):
+        yield Issue(violation.message)
 
 
 # Tags whose TYPE substructure is required (§3.3).

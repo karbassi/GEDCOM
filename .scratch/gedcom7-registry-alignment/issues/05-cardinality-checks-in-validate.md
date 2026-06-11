@@ -1,6 +1,6 @@
 # 05 — Wire cardinality checks into validate()
 
-Status: ready-for-agent
+Status: done
 Type: AFK
 
 ## Parent

@@ -6,9 +6,12 @@ import pytest
 
 from gedcom7 import (
     Document,
+    Event,
+    EventDetail,
     Family,
     Header,
     Individual,
+    Multimedia,
     PersonalName,
     Submitter,
     ValidationError,
@@ -53,3 +56,21 @@ def test_lenient_mode_warns_and_emits() -> None:
 def test_validate_returns_messages_in_lenient_mode() -> None:
     messages = validate(Document(records=[Submitter("")]), strict=False)
     assert messages == ["SUBM requires a non-empty NAME"]
+
+
+def test_cardinality_flags_missing_required_via_validate() -> None:
+    # A generic EVEN with no TYPE breaches INDI-EVEN's required TYPE.
+    indi = Individual(
+        names=[PersonalName("X //")],
+        events=[Event("EVEN", text="left town", detail=EventDetail())],
+    )
+    messages = validate(Document(records=[indi]), strict=False)
+    assert any(m == "EVEN requires at least 1 TYPE but has 0" for m in messages)
+
+
+def test_cardinality_strict_raises_lenient_collects() -> None:
+    doc = Document(records=[Multimedia()])  # OBJE with no FILE
+    with pytest.raises(ValidationError):
+        validate(doc, strict=True)
+    messages = validate(doc, strict=False)
+    assert any("requires at least 1 FILE" in m for m in messages)
