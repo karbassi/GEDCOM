@@ -8,25 +8,16 @@ object identity. ``VOID`` is the deliberate null pointer.
 
 from __future__ import annotations
 
-from .model import Document, Individual, Record, Submitter
+from .model import VOID, Document, Family, Individual, Record, Submitter, VoidPointer
+
+__all__ = ["VOID", "VoidPointer", "XrefError", "XrefTable", "build_xref_table"]
 
 # Record class → xref id prefix. Extended as record types are added.
 _PREFIXES: list[tuple[type, str]] = [
     (Individual, "I"),
+    (Family, "F"),
     (Submitter, "U"),
 ]
-
-
-class _Void:
-    """Sentinel for a deliberate null pointer (`@VOID@`)."""
-
-    __slots__ = ()
-
-    def __repr__(self) -> str:
-        return "VOID"
-
-
-VOID = _Void()
 
 
 class XrefError(ValueError):
@@ -63,9 +54,9 @@ class XrefTable:
                 f"{type(record).__name__} is referenced but was not added to the Document's records"
             ) from None
 
-    def resolve(self, ref: Record | _Void) -> str:
+    def resolve(self, ref: Record | VoidPointer) -> str:
         """Resolve a pointer target to its id, or `@VOID@` for the null pointer."""
-        if isinstance(ref, _Void):
+        if isinstance(ref, VoidPointer):
             return "@VOID@"
         return self.of(ref)
 

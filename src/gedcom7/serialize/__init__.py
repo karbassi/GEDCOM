@@ -10,26 +10,31 @@ from __future__ import annotations
 from collections.abc import Iterator
 
 from ..lines import Line
-from ..model import Document, Individual, Record, Submitter
+from ..model import Document, Family, Individual, Record, Submitter
 from ..xref import XrefTable
+from ._context import Context
 from ._header import header_lines
-from ._records import individual_lines, submitter_lines
+from ._links import build_family_index
+from ._records import family_lines, individual_lines, submitter_lines
 
 
-def _record_lines(record: Record, table: XrefTable) -> Iterator[Line]:
+def _record_lines(record: Record, ctx: Context) -> Iterator[Line]:
     if isinstance(record, Submitter):
-        yield from submitter_lines(record, table)
+        yield from submitter_lines(record, ctx)
     elif isinstance(record, Individual):
-        yield from individual_lines(record, table)
+        yield from individual_lines(record, ctx)
+    elif isinstance(record, Family):
+        yield from family_lines(record, ctx)
     else:
         raise TypeError(f"no serializer for record type {type(record).__name__}")
 
 
 def serialize_document(document: Document, table: XrefTable) -> Iterator[Line]:
     """Yield the logical lines for a whole document, in document order."""
-    yield from header_lines(document.header, table)
+    ctx = Context(table=table, families=build_family_index(document))
+    yield from header_lines(document.header, ctx)
     for record in document.records:
-        yield from _record_lines(record, table)
+        yield from _record_lines(record, ctx)
     yield Line(0, "TRLR")
 
 

@@ -7,7 +7,9 @@ format. See the issue tracker under ``.scratch/`` for the build plan.
 from __future__ import annotations
 
 from .model import (
+    VOID,
     Document,
+    Family,
     Header,
     Individual,
     NamePieces,
@@ -16,11 +18,11 @@ from .model import (
     Submitter,
 )
 from .writer import dump, dumps
-from .xref import VOID
 
 __all__ = [
     "VOID",
     "Document",
+    "Family",
     "Header",
     "Individual",
     "NamePieces",

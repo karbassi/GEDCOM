@@ -10,6 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from ..enums import Sex
+from ._pointers import VoidPointer
 from ._substructures import PersonalName
 
 
@@ -31,4 +32,20 @@ class Individual:
 
     names: list[PersonalName] = field(default_factory=list)
     sex: Sex | str | None = None
+    xref_id: str | None = None
+
+
+@dataclass
+class Family:
+    """A family unit (`FAM`) linking spouses and children.
+
+    ``children`` is in birth-chronological order; a :data:`VoidPointer`
+    entry marks an unknown child in birth order. The matching ``FAMS``/
+    ``FAMC`` back-pointers on the linked individuals are derived by the
+    writer (ADR-0001), not stored here.
+    """
+
+    husband: Individual | None = None
+    wife: Individual | None = None
+    children: list[Individual | VoidPointer] = field(default_factory=list)
     xref_id: str | None = None

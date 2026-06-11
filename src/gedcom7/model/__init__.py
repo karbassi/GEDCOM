@@ -9,11 +9,14 @@ objects live in :mod:`gedcom7.types`.
 from __future__ import annotations
 
 from ._document import Document, Header, Record
-from ._records import Individual, Submitter
+from ._pointers import VOID, VoidPointer
+from ._records import Family, Individual, Submitter
 from ._substructures import NamePieces, NameTranslation, PersonalName
 
 __all__ = [
+    "VOID",
     "Document",
+    "Family",
     "Header",
     "Individual",
     "NamePieces",
@@ -21,4 +24,5 @@ __all__ = [
     "PersonalName",
     "Record",
     "Submitter",
+    "VoidPointer",
 ]

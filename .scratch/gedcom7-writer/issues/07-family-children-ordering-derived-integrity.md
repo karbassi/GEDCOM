@@ -1,6 +1,6 @@
 # 07 — Family + children birth-order + derived integrity
 
-Status: needs-triage
+Status: done
 Type: AFK
 
 ## Parent
