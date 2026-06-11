@@ -2,7 +2,13 @@
 
 A [GEDCOM 7.0.18](https://gedcom.io/specifications/FamilySearchGEDCOMv7.html) writer for Python — serialize a genealogical data model to FamilySearch GEDCOM 7 text.
 
-> Status: early scaffolding. The data model and writer are built out incrementally; see `.scratch/` for the plan and issues.
+> Status: v1 feature-complete for the standard structures. The writer serializes the full GEDCOM 7 record set (HEAD, INDI, FAM, OBJE, REPO, SNOTE, SOUR, SUBM, TRLR) with all 16 data types, 4 calendars, every enumeration set, the reusable substructure blocks (names, events, attributes, non-events, LDS ordinances, places, addresses, identifiers, associations, restrictions, source/repository citations, multimedia links, notes, change/creation dates), extension enum values with auto-emitted `HEAD.SCHMA`, and two-tier strict/lenient validation. See `.scratch/` for the plan and issues.
+
+### Known limitations (post-v1)
+
+- **GEDZIP** (`.gdz`) packaging — out of scope for v1.
+- **Custom extension *structures*** (arbitrary `_`-tag records/substructures) — only extension enum *values* are supported in v1.
+- **`INDI.FAMC` pedigree/status detail** (`PEDI`/`STAT` on a membership) and **event-level `FAMC`** (`BIRT`/`CHR`/`ADOP`) — `FAMS`/`FAMC` are derived as bare pointers (ADR-0001); per-membership detail is deferred.
 
 ## Tech stack
 
