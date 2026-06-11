@@ -1,6 +1,6 @@
 # 01 — Payload-type validation
 
-Status: needs-triage
+Status: ready-for-agent
 Type: AFK
 
 ## Parent

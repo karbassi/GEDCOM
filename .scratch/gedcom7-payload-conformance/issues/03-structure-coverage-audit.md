@@ -1,6 +1,6 @@
 # 03 — Structure coverage audit
 
-Status: needs-triage
+Status: ready-for-agent
 Type: AFK
 
 ## Parent

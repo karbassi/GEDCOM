@@ -1,6 +1,6 @@
 # 02 — Data-type conformance lock
 
-Status: needs-triage
+Status: ready-for-agent
 Type: AFK
 
 ## Parent
