@@ -10,12 +10,16 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from .types import DateExact, Time
+
 
 @dataclass
 class Header:
     """Document metadata pseudo-record (`HEAD`)."""
 
     gedcom_version: str = "7.0"
+    date: DateExact | None = None
+    time: Time | None = None
     copyright: str | None = None
 
 

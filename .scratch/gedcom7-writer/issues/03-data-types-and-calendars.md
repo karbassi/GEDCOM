@@ -1,6 +1,6 @@
 # 03 — Data types + calendars
 
-Status: needs-triage
+Status: done
 Type: AFK
 
 ## Parent

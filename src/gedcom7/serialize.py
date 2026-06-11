@@ -19,6 +19,10 @@ def serialize_document(document: Document) -> Iterator[Line]:
     yield Line(0, "HEAD")
     yield Line(1, "GEDC")
     yield Line(2, "VERS", header.gedcom_version)
+    if header.date is not None:
+        yield Line(1, "DATE", header.date.gedcom())
+        if header.time is not None:
+            yield Line(2, "TIME", header.time.gedcom())
     if header.copyright is not None:
         yield Line(1, "COPR", header.copyright)
     # Records are emitted here as record types are added (slices 05+).
