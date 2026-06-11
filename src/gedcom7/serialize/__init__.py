@@ -13,6 +13,7 @@ from ..extensions import registered_extension_uris
 from ..lines import Line
 from ..model import (
     Document,
+    ExtensionStructure,
     Family,
     Individual,
     Multimedia,
@@ -66,6 +67,20 @@ def _record_lines(record: Record, ctx: Context) -> Iterator[Line]:
     yield from meta_lines(record.change_date, record.creation_date, ctx)
 
 
+def _extension_schema(records: list[Record]) -> dict[str, str]:
+    """Collect each used extension structure's tag -> declared SCHMA URI."""
+    declared: dict[str, str] = {}
+
+    def walk(extensions: list[ExtensionStructure]) -> None:
+        for ext in extensions:
+            declared.setdefault(ext.tag, ext.schema_uri)
+            walk(list(ext.children))
+
+    for record in records:
+        walk(record.extensions)
+    return declared
+
+
 def _used_schema_entries(body: list[Line], schema: dict[str, str]) -> list[tuple[str, str]]:
     """Find declared extension identifiers actually used, sorted for stability."""
     used: set[str] = set()
@@ -81,9 +96,13 @@ def serialize_document(document: Document, table: XrefTable) -> Iterator[Line]:
     """Yield the logical lines for a whole document, in document order."""
     ctx = Context(table=table, families=build_family_index(document))
     body = [line for record in document.records for line in _record_lines(record, ctx)]
-    # Registered extension structures declare their authoritative URIs; an
-    # explicit header.schema entry overrides the registry default.
-    declared = {**registered_extension_uris(), **document.header.schema}
+    # Extension structures declare their URIs (registered default or a
+    # user-supplied uri); an explicit header.schema entry overrides them.
+    declared = {
+        **registered_extension_uris(),
+        **_extension_schema(document.records),
+        **document.header.schema,
+    }
     schema_entries = _used_schema_entries(body, declared)
     yield from header_lines(document.header, ctx, schema_entries)
     yield from body

@@ -38,3 +38,30 @@ def test_unregistered_extension_tag_is_rejected() -> None:
 def test_no_schma_when_no_extensions_used() -> None:
     out = dumps(Document(records=[Submitter("Ali")]))
     assert "SCHMA" not in out
+
+
+def test_arbitrary_extension_with_user_uri() -> None:
+    subm = Submitter(
+        "Ali",
+        extensions=[ExtensionStructure("_FOO", value="bar", uri="https://example/_FOO")],
+    )
+    out = dumps(Document(records=[subm]))
+    assert "1 _FOO bar\n" in out
+    assert "2 TAG _FOO https://example/_FOO\n" in out
+
+
+def test_arbitrary_extension_requires_uri_or_registration() -> None:
+    with pytest.raises(ValueError, match="pass uri="):
+        ExtensionStructure("_FOO")
+
+
+def test_extension_tag_must_start_with_underscore() -> None:
+    with pytest.raises(ValueError, match="must start with"):
+        ExtensionStructure("FOO", uri="https://example/FOO")
+
+
+def test_validate_accepts_well_formed_extension() -> None:
+    from gedcom7 import validate
+
+    subm = Submitter("Ali", extensions=[ExtensionStructure("_SOUR")])
+    assert validate(Document(records=[subm])) == []

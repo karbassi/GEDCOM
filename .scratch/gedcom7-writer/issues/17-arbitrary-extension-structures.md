@@ -1,6 +1,6 @@
 # 17 — Arbitrary (unregistered) extension structures
 
-Status: ready-for-agent
+Status: done
 Type: AFK
 
 ## Parent

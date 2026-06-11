@@ -244,22 +244,35 @@ class LdsOrdinanceDetail:
 
 @dataclass(frozen=True)
 class ExtensionStructure:
-    """A registered `_`-prefixed extension structure (see :mod:`gedcom7.extensions`).
+    """A `_`-prefixed extension structure (see :mod:`gedcom7.extensions`).
 
-    ``tag`` must be a supported registered extension tag; its URI is resolved
-    from the registry and auto-declared in ``HEAD.SCHMA``. ``children`` carries
-    nested extension substructures. Construction rejects an unregistered tag.
+    Supply ``uri`` to declare an arbitrary, user-defined extension (any
+    ``_``-tag); omit it to use a *registered* extension, whose URI is resolved
+    from the registry. Either way the URI is auto-declared in ``HEAD.SCHMA``.
+    ``children`` carries nested extension substructures. Construction rejects a
+    tag without a ``_`` prefix, and an unregistered tag given no ``uri``.
     """
 
     tag: str
     value: str | None = None
     children: tuple[ExtensionStructure, ...] = ()
+    uri: str | None = None
 
     def __post_init__(self) -> None:
         from ..extensions import registered_extension_uris
 
-        if self.tag not in registered_extension_uris():
+        if not self.tag.startswith("_"):
+            raise ValueError(f"extension tag {self.tag!r} must start with '_'")
+        if self.uri is None and self.tag not in registered_extension_uris():
             raise ValueError(
-                f"{self.tag!r} is not a registered extension structure; "
-                f"registered tags: {sorted(registered_extension_uris())}"
+                f"{self.tag!r} is not a registered extension structure; pass "
+                f"uri= to declare it, or use a registered tag: "
+                f"{sorted(registered_extension_uris())}"
             )
+
+    @property
+    def schema_uri(self) -> str:
+        """The URI declared in ``HEAD.SCHMA`` for this extension's tag."""
+        from ..extensions import registered_extension_uris
+
+        return self.uri or registered_extension_uris()[self.tag]
