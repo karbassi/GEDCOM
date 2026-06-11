@@ -1,6 +1,6 @@
 # 03 — Calendar/month/epoch registry lock
 
-Status: ready-for-agent
+Status: done
 Type: AFK
 
 ## Parent

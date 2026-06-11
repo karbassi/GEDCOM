@@ -22,6 +22,7 @@ from gedcom7.enums import (
     Role,
     Sex,
 )
+from gedcom7.types import _EPOCH_CALENDARS, _MONTHS, Calendar
 
 _REGISTRY = Path(__file__).resolve().parents[1] / "registry"
 
@@ -80,6 +81,28 @@ def _registry_exid_uris() -> set[str]:
 def test_exid_types_match_registry_exactly() -> None:
     ours = {member.value for member in ExidType}
     assert ours == _registry_exid_uris(), "ExidType drifted from uri/exid-types"
+
+
+def _registry_calendars() -> dict[str, tuple[list[str], set[str]]]:
+    out: dict[str, tuple[list[str], set[str]]] = {}
+    with (_REGISTRY / "calendars.tsv").open(encoding="utf-8") as handle:
+        reader = csv.DictReader(handle, delimiter="\t")
+        for row in reader:
+            months = row["months"].split(",")
+            epochs = {e for e in row["epochs"].split(",") if e}
+            out[row["standard_tag"]] = (months, epochs)
+    return out
+
+
+def test_calendar_months_and_epochs_match_registry() -> None:
+    registry = _registry_calendars()
+    for calendar in Calendar:
+        months, epochs = registry[calendar.value]
+        assert _MONTHS[calendar] == months, f"{calendar.value} months drifted"
+        permits_epoch = "BCE" in epochs
+        assert (calendar in _EPOCH_CALENDARS) == permits_epoch, (
+            f"{calendar.value} epoch permission drifted from registry"
+        )
 
 
 def test_event_tags_have_y_null_payload() -> None:
