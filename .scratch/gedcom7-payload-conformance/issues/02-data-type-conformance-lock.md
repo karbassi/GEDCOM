@@ -1,6 +1,6 @@
 # 02 — Data-type conformance lock
 
-Status: ready-for-agent
+Status: done
 Type: AFK
 
 ## Parent

@@ -1,0 +1,17 @@
+datatype	builder	gedcom
+Age	age_years	35y
+Age	age_zero	0y
+Age	age_days	363d
+Age	age_weeks_days	51w 6d
+Age	age_bound_lt	< 8d
+Time	time_hm	02:50
+Time	time_hms	23:59:59
+Time	time_utc	02:50Z
+Latitude	lat_north	N18.150944
+Longitude	long_east	E168.150944
+Date#exact	date_exact	31 JAN 2024
+Date#period	date_period	FROM 1670 TO 1800
+Date	date_julian	JULIAN 1 MAR 1700
+Date	date_french	FRENCH_R BRUM 8
+Date	date_hebrew	HEBREW TSH 5780
+Date	date_bce	44 BCE

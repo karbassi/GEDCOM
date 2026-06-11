@@ -24,6 +24,7 @@ stdlib-only test reads (one row per registry entry).
 - `exid-types.tsv` — the 14 registered `EXID`.`TYPE` authorities (`name`, `uri`, `label`), from `uri/exid-types/`.
 - `calendars.tsv` — the 4 standard calendars (`standard_tag`, ordered `months`, permitted `epochs`), from `calendar/standard/`.
 - `extension-structures.tsv` — the 14 registered `_`-prefixed extension structures (`name`, `tags`, `uri`, `label`, `payload`), from `structure/extension/`.
+- `data-type-examples.tsv` — canonical worked-example payloads (`datatype`, `builder`, `gedcom`) for the value types, transcribed from the ABNF/example tables in `data-type/standard/`. Locks value formatting via `tests/test_data_type_lock.py`. (The spec's `24:00:00` end-of-day Time is intentionally omitted: this writer caps the hour at 23.)
 
 These lock the library's `ExidType`, calendar month/epoch tables, and
 registered-extension set against the registry. Re-vendor by re-running the
