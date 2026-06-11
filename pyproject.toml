@@ -24,7 +24,7 @@ dependencies = []
 yaml = ["pyyaml>=6"]
 
 [project.scripts]
-gedcom7 = "gedcom7.cli:main"
+gedcom = "gedcom7.cli:main"
 
 [build-system]
 requires = ["hatchling"]
@@ -58,6 +58,11 @@ select = [
   "SIM",  # flake8-simplify
   "RUF",  # ruff-specific
 ]
+
+[tool.ruff.lint.per-file-ignores]
+# Reference-data tables of authoring-dialect field descriptions; long lines
+# keep each entry on one readable row.
+"src/gedcom7/cli/schema.py" = ["E501"]
 
 [tool.mypy]
 python_version = "3.12"

@@ -2,7 +2,7 @@
 
 A [GEDCOM 7.0.18](https://gedcom.io/specifications/FamilySearchGEDCOMv7.html) writer for Python — serialize a genealogical data model to FamilySearch GEDCOM 7 text.
 
-> Status: feature-complete for the standard structures. The writer serializes the full GEDCOM 7 record set (HEAD, INDI, FAM, OBJE, REPO, SNOTE, SOUR, SUBM, TRLR) with all 16 data types, 4 calendars, every enumeration set, the reusable substructure blocks (names, events, attributes, non-events, LDS ordinances, places, addresses, identifiers, associations, restrictions, source/repository citations, multimedia links, notes, change/creation dates), extension enum values and extension *structures* (registered + arbitrary) with auto-emitted `HEAD.SCHMA`, registered `EXID` type URIs (`ExidType`), spec-backed cardinality validation, two-tier strict/lenient validation, and GEDZIP (`.gdz`) packaging. A command-line tool (`gedcom7`) builds `.ged`/`.gdz` files from a friendly YAML/JSON/TOML authoring document. Code is drift-locked to the vendored FamilySearch registries (`registry/`). See `.scratch/` for the plan and issues.
+> Status: feature-complete for the standard structures. The writer serializes the full GEDCOM 7 record set (HEAD, INDI, FAM, OBJE, REPO, SNOTE, SOUR, SUBM, TRLR) with all 16 data types, 4 calendars, every enumeration set, the reusable substructure blocks (names, events, attributes, non-events, LDS ordinances, places, addresses, identifiers, associations, restrictions, source/repository citations, multimedia links, notes, change/creation dates), extension enum values and extension *structures* (registered + arbitrary) with auto-emitted `HEAD.SCHMA`, registered `EXID` type URIs (`ExidType`), spec-backed cardinality validation, two-tier strict/lenient validation, and GEDZIP (`.gdz`) packaging. A command-line tool (`gedcom`) builds `.ged`/`.gdz` files from a friendly YAML/JSON/TOML authoring document. Code is drift-locked to the vendored FamilySearch registries (`registry/`). See `.scratch/` for the plan and issues.
 
 ### Known limitations
 
@@ -10,17 +10,31 @@ A [GEDCOM 7.0.18](https://gedcom.io/specifications/FamilySearchGEDCOMv7.html) wr
 
 ## Command-line tool
 
-`gedcom7` turns a declarative **authoring document** — a YAML, JSON, or TOML file describing people, families, and sources — into a conformant GEDCOM 7 file. No Python required.
+The `gedcom` command turns a declarative **authoring document** — a YAML, JSON, or TOML file describing people, families, and sources — into a conformant GEDCOM 7 file. No Python required.
 
 ```sh
-gedcom7 init -f yaml > tree.yaml   # scaffold a starter document to edit
-gedcom7 validate tree.yaml         # check it without writing output
-gedcom7 build tree.yaml -o tree.ged   # build GEDCOM text (.ged)
-gedcom7 build tree.yaml -o tree.gdz   # or a GEDZIP package (.gdz)
-gedcom7 build tree.yaml            # no -o: print GEDCOM to stdout
+gedcom init -f yaml > tree.yaml    # scaffold a starter document to edit
+gedcom validate tree.yaml          # check it without writing output
+gedcom build tree.yaml -o tree.ged    # build GEDCOM text (.ged)
+gedcom build tree.yaml -o tree.gdz    # or a GEDZIP package (.gdz)
+gedcom build tree.yaml             # no -o: print GEDCOM to stdout
 ```
 
-`python -m gedcom7` is equivalent to the `gedcom7` command. Exit codes: `0` success, `1` validation failure, `2` usage/input error. `build` is strict by default; `--lenient` downgrades document-level rule violations to warnings and emits anyway.
+`python -m gedcom7` is equivalent to the `gedcom` command. Run `gedcom help` (or `gedcom help <command>`) for usage. Exit codes: `0` success, `1` validation failure, `2` usage/input error. `build` is strict by default; `--lenient` downgrades document-level rule violations to warnings and emits anyway.
+
+### Driving it from an AI agent
+
+The CLI is built to be agent-friendly. An agent can learn the whole dialect and drive the workflow without guessing:
+
+```sh
+gedcom guide                       # the workflow + rules, as a short playbook
+gedcom schema                      # machine-readable dialect: sections, enums,
+                                   #   date forms, references, a worked example (JSON)
+gedcom validate tree.yaml --json   # {"ok": false, "issues": [...]} or {"ok": true, ...}
+gedcom build tree.yaml -o out.ged --json   # {"ok": true, "output": "...", "records": N}
+```
+
+With `--json`, errors are structured too — `{"ok": false, "error": {"path": "individuals[2].events[0].date", "message": "…"}}` — so an agent can locate and fix the offending field, then re-validate. The `schema` enum vocabularies are derived live from the library, so they never drift from what `build` accepts.
 
 ### Authoring dialect
 
@@ -69,7 +83,7 @@ sources:
 - **Dates** use familiar GEDCOM forms: `1 JAN 1900`, `JAN 1900`, `1900`, `100 BCE`, `ABT/CAL/EST 1850`, `BET 1900 AND 1910`, `AFT 1900`, `BEF 1910`, `FROM 1920 TO 1930`. Other calendars take a leading keyword: `JULIAN 1 MAR 1700`, `HEBREW 1 TSH 5700`, `FRENCH_R 1 VEND 1`. Native YAML/TOML dates (`1900-01-01`) are accepted too.
 - **Enums** (`sex`, name `type`, `pedigree`, `restriction`, `role`, `medium`, `quality`, ordinance `status`, …) accept the member name (`female`, `birth`, `book`) or the exact spec string; a `_`-prefixed value passes through as an extension.
 - **Errors** are located: a bad date, reference, or enum reports its path, e.g. `individuals[2].events[0].date: …`.
-- The authoring dialect is a thin projection of the library model — every key maps to a model field. `gedcom7 init` prints a complete, commented example.
+- The authoring dialect is a thin projection of the library model — every key maps to a model field. `gedcom init` prints a complete, commented example, and `gedcom schema` describes every section and enum.
 
 ### Installing YAML support
 

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import zipfile
 from pathlib import Path
 
@@ -24,13 +25,28 @@ def test_version(capsys: pytest.CaptureFixture[str]) -> None:
     with pytest.raises(SystemExit) as info:
         main(["--version"])
     assert info.value.code == 0
-    assert "gedcom7" in capsys.readouterr().out
+    out = capsys.readouterr().out
+    assert out.startswith("gedcom ")
+    assert "gedcom7" not in out  # the command is named 'gedcom', not 'gedcom7'
 
 
-def test_no_command_is_usage_error() -> None:
-    with pytest.raises(SystemExit) as info:
-        main([])
-    assert info.value.code == 2
+def test_no_command_prints_help(capsys: pytest.CaptureFixture[str]) -> None:
+    assert main([]) == 0
+    out = capsys.readouterr().out
+    assert "usage: gedcom" in out
+    assert "build" in out and "validate" in out
+
+
+def test_help_command_lists_subcommands(capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["help"]) == 0
+    assert "usage: gedcom" in capsys.readouterr().out
+
+
+def test_help_topic_shows_subcommand_help(capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["help", "build"]) == 0
+    out = capsys.readouterr().out
+    assert "usage: gedcom build" in out
+    assert "--lenient" in out
 
 
 def test_build_to_ged_writes_bom(tmp_path: Path) -> None:
@@ -102,3 +118,65 @@ def test_init_to_file(tmp_path: Path) -> None:
     assert main(["init", "-f", "toml", "-o", str(out)]) == 0
     assert out.exists()
     assert "[[individuals]]" in out.read_text(encoding="utf-8")
+
+
+# -- AI-native surface: schema, guide, and structured --json output ----------
+
+
+def test_schema_json_is_parseable_and_live(capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["schema"]) == 0
+    schema = json.loads(capsys.readouterr().out)
+    sections = {section["key"] for section in schema["sections"]}
+    assert {"individuals", "families", "sources"} <= sections
+    # Enum vocab is derived live from the enum classes.
+    assert schema["enums"]["sex"]["values"]["female"] == "F"
+    assert "individuals" in schema["example"]
+
+
+def test_schema_text_format(capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["schema", "-f", "text"]) == 0
+    out = capsys.readouterr().out
+    assert "authoring dialect" in out
+    assert "sex:" in out
+
+
+def test_guide_prints_workflow(capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["guide"]) == 0
+    out = capsys.readouterr().out
+    assert "Workflow" in out
+    assert "validate" in out
+
+
+def test_validate_json_ok(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    src = _write(tmp_path, "in.json", _DOC)
+    assert main(["validate", str(src), "--json"]) == 0
+    result = json.loads(capsys.readouterr().out)
+    assert result == {"ok": True, "issues": []}
+
+
+def test_validate_json_error_is_structured(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    src = _write(tmp_path, "in.json", '{"individuals": [{"name": "A /B/", "sex": "no"}]}')
+    assert main(["validate", str(src), "--json"]) == 2
+    result = json.loads(capsys.readouterr().out)
+    assert result["ok"] is False
+    assert result["error"]["path"] == "individuals[0].sex"
+    assert "sex" in result["error"]["message"]
+
+
+def test_build_json_result(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    src = _write(tmp_path, "in.json", _DOC)
+    out = tmp_path / "out.ged"
+    assert main(["build", str(src), "-o", str(out), "--json"]) == 0
+    result = json.loads(capsys.readouterr().out)
+    assert result["ok"] is True
+    assert result["format"] == "gedcom"
+    assert result["records"] == 1
+
+
+def test_build_json_requires_output(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    src = _write(tmp_path, "in.json", _DOC)
+    assert main(["build", str(src), "--json"]) == 2
+    result = json.loads(capsys.readouterr().out)
+    assert result["ok"] is False

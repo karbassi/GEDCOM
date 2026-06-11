@@ -10,7 +10,7 @@ from __future__ import annotations
 from .errors import LoadError
 
 _YAML = """\
-# gedcom7 authoring document. Build with: gedcom7 build this.yaml -o tree.ged
+# gedcom7 authoring document. Build with: gedcom build this.yaml -o tree.ged
 # Records link by handle (the `xref:` value); references may be written I1 or @I1@.
 
 header:
@@ -59,7 +59,7 @@ sources:
 """
 
 _TOML = """\
-# gedcom7 authoring document. Build with: gedcom7 build this.toml -o tree.ged
+# gedcom7 authoring document. Build with: gedcom build this.toml -o tree.ged
 # Records link by handle (the `xref` value); references may be written I1 or @I1@.
 
 [header]
