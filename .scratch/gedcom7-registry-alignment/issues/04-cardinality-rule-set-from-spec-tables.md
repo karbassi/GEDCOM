@@ -1,6 +1,6 @@
 # 04 — Cardinality rule set from spec tables
 
-Status: needs-triage
+Status: ready-for-agent
 Type: AFK
 
 ## Parent

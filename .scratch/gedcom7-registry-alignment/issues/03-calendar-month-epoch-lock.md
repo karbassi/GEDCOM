@@ -1,6 +1,6 @@
 # 03 — Calendar/month/epoch registry lock
 
-Status: needs-triage
+Status: ready-for-agent
 Type: AFK
 
 ## Parent

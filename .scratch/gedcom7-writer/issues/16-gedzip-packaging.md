@@ -1,6 +1,6 @@
 # 16 — GEDZIP (.gdz) packaging
 
-Status: needs-triage
+Status: ready-for-agent
 Type: AFK
 
 ## Parent

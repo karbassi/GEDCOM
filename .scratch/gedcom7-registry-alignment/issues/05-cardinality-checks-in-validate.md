@@ -1,6 +1,6 @@
 # 05 — Wire cardinality checks into validate()
 
-Status: needs-triage
+Status: ready-for-agent
 Type: AFK
 
 ## Parent

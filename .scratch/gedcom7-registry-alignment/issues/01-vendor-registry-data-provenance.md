@@ -1,6 +1,6 @@
 # 01 — Vendor EXID/calendar/month/extension registry data + provenance
 
-Status: needs-triage
+Status: ready-for-agent
 Type: AFK
 
 ## Parent

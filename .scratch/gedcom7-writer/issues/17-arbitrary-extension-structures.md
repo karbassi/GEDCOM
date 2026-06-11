@@ -1,6 +1,6 @@
 # 17 — Arbitrary (unregistered) extension structures
 
-Status: needs-triage
+Status: ready-for-agent
 Type: AFK
 
 ## Parent

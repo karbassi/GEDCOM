@@ -1,6 +1,6 @@
 # 06 — Registered extension structures
 
-Status: needs-triage
+Status: ready-for-agent
 Type: AFK
 
 ## Parent
