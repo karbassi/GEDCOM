@@ -7,7 +7,7 @@ the caller maintaining both sides.
 
 from __future__ import annotations
 
-from ..model import Document, Family, Individual, VoidPointer
+from ..model import ChildLink, Document, Family, Individual, VoidPointer
 
 
 class FamilyIndex:
@@ -16,12 +16,17 @@ class FamilyIndex:
     def __init__(self) -> None:
         self._spouse: dict[int, list[Family]] = {}
         self._child: dict[int, list[Family]] = {}
+        self._child_detail: dict[tuple[int, int], ChildLink] = {}
 
     def spouse_families(self, individual: Individual) -> list[Family]:
         return self._spouse.get(id(individual), [])
 
     def child_families(self, individual: Individual) -> list[Family]:
         return self._child.get(id(individual), [])
+
+    def child_detail(self, individual: Individual, family: Family) -> ChildLink | None:
+        """The membership detail for this child in this family, if any."""
+        return self._child_detail.get((id(individual), id(family)))
 
     def _add_spouse(self, individual: Individual, family: Family) -> None:
         self._spouse.setdefault(id(individual), []).append(family)
@@ -40,6 +45,9 @@ def build_family_index(document: Document) -> FamilyIndex:
         if record.wife is not None:
             index._add_spouse(record.wife, record)
         for child in record.children:
-            if not isinstance(child, VoidPointer):
+            if isinstance(child, ChildLink):
+                index._add_child(child.individual, record)
+                index._child_detail[id(child.individual), id(record)] = child
+            elif not isinstance(child, VoidPointer):
                 index._add_child(child, record)
     return index

@@ -18,6 +18,7 @@ from dataclasses import dataclass
 
 from .cardinality import check_tree, load_rules
 from .model import (
+    ChildLink,
     Document,
     Family,
     Individual,
@@ -137,11 +138,12 @@ def _family_issues(family: Family, known: set[int]) -> Iterator[Issue]:
     for child in family.children:
         if isinstance(child, VoidPointer):
             continue
-        if id(child) not in known:
+        individual = child.individual if isinstance(child, ChildLink) else child
+        if id(individual) not in known:
             yield Issue("FAM.CHIL points to an Individual not added to the Document")
-        if id(child) in seen_children:
+        if id(individual) in seen_children:
             yield Issue("FAM lists the same Individual as a child more than once")
-        seen_children.add(id(child))
+        seen_children.add(id(individual))
 
 
 def validate(document: Document, *, strict: bool = True) -> list[str]:

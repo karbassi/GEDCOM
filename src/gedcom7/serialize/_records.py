@@ -4,11 +4,22 @@ from __future__ import annotations
 
 from collections.abc import Iterator
 
-from ..enums import Medium, Quality, Restriction, Role, Sex, enum_list, enum_value
+from ..enums import (
+    FamcStatus,
+    Medium,
+    Pedigree,
+    Quality,
+    Restriction,
+    Role,
+    Sex,
+    enum_list,
+    enum_value,
+)
 from ..lines import Line
 from ..model import (
     Association,
     ChangeDate,
+    ChildLink,
     CreationDate,
     Family,
     Identifier,
@@ -244,6 +255,19 @@ def submitter_lines(record: Submitter, ctx: Context) -> Iterator[Line]:
     yield from _identifier_lines(record.identifiers, 1)
 
 
+def _famc_detail_lines(detail: ChildLink | None, level: int) -> Iterator[Line]:
+    if detail is None:
+        return
+    if detail.pedigree is not None:
+        yield Line(level, "PEDI", enum_value(detail.pedigree, Pedigree))
+        if detail.pedigree_phrase is not None:
+            yield Line(level + 1, "PHRASE", detail.pedigree_phrase)
+    if detail.status is not None:
+        yield Line(level, "STAT", enum_value(detail.status, FamcStatus))
+        if detail.status_phrase is not None:
+            yield Line(level + 1, "PHRASE", detail.status_phrase)
+
+
 def individual_lines(record: Individual, ctx: Context) -> Iterator[Line]:
     yield Line(0, "INDI", xref=ctx.table.of(record))
     yield from _restriction_lines(record.restrictions, 1)
@@ -252,16 +276,17 @@ def individual_lines(record: Individual, ctx: Context) -> Iterator[Line]:
     if record.sex is not None:
         yield Line(1, "SEX", enum_value(record.sex, Sex))
     for attribute in record.attributes:
-        yield from attribute_lines(attribute, 1)
+        yield from attribute_lines(attribute, 1, ctx)
     for event in record.events:
-        yield from event_lines(event, 1)
+        yield from event_lines(event, 1, ctx)
     for non_event in record.non_events:
         yield from non_event_lines(non_event, 1)
     for ordinance in record.lds_ordinances:
         yield from _ordinance_lines(ordinance, ctx, 1)
-    # Derived family memberships (ADR-0001).
+    # Derived family memberships (ADR-0001); per-membership detail (ADR-0004).
     for family in ctx.families.child_families(record):
         yield Line(1, "FAMC", ctx.table.of(family), is_pointer=True)
+        yield from _famc_detail_lines(ctx.families.child_detail(record, family), 2)
     for family in ctx.families.spouse_families(record):
         yield Line(1, "FAMS", ctx.table.of(family), is_pointer=True)
     yield from _associations(record.associations, ctx, 1)
@@ -285,9 +310,9 @@ def family_lines(record: Family, ctx: Context) -> Iterator[Line]:
     yield Line(0, "FAM", xref=ctx.table.of(record))
     yield from _restriction_lines(record.restrictions, 1)
     for attribute in record.attributes:
-        yield from attribute_lines(attribute, 1)
+        yield from attribute_lines(attribute, 1, ctx)
     for event in record.events:
-        yield from event_lines(event, 1)
+        yield from event_lines(event, 1, ctx)
     for non_event in record.non_events:
         yield from non_event_lines(non_event, 1)
     if record.husband is not None:
@@ -295,7 +320,8 @@ def family_lines(record: Family, ctx: Context) -> Iterator[Line]:
     if record.wife is not None:
         yield Line(1, "WIFE", ctx.table.of(record.wife), is_pointer=True)
     for child in record.children:
-        yield Line(1, "CHIL", ctx.table.resolve(child), is_pointer=True)
+        target = child.individual if isinstance(child, ChildLink) else child
+        yield Line(1, "CHIL", ctx.table.resolve(target), is_pointer=True)
     for sealing in record.sealings:
         yield from _sealing_lines(sealing, 1)
     yield from _associations(record.associations, ctx, 1)

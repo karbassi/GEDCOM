@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from ..enums import Quality, Restriction, Role, Sex
+from ..enums import FamcStatus, Pedigree, Quality, Restriction, Role, Sex
 from ..types import DateExact, DatePeriod, DateValue, Time
 from ._pointers import VoidPointer
 from ._substructures import (
@@ -151,19 +151,37 @@ class Individual(RecordBase):
     identifiers: list[Identifier] = field(default_factory=list)
 
 
+@dataclass(frozen=True)
+class ChildLink:
+    """A child entry in ``Family.children`` carrying that child's membership detail.
+
+    Use in place of a bare ``Individual`` when the child's view of this family
+    (its derived ``INDI.FAMC``) needs ``PEDI`` (pedigree) or ``STAT`` (child-to-
+    family status) detail. The detail is emitted on the derived ``FAMC`` line
+    (ADR-0004); the family remains the single source of the link (ADR-0001).
+    """
+
+    individual: Individual
+    pedigree: Pedigree | str | None = None  # PEDI
+    pedigree_phrase: str | None = None
+    status: FamcStatus | str | None = None  # STAT
+    status_phrase: str | None = None
+
+
 @dataclass
 class Family(RecordBase):
     """A family unit (`FAM`) linking spouses and children.
 
     ``children`` is in birth-chronological order; a :data:`VoidPointer`
-    entry marks an unknown child in birth order. The matching ``FAMS``/
-    ``FAMC`` back-pointers on the linked individuals are derived by the
-    writer (ADR-0001), not stored here.
+    entry marks an unknown child in birth order, and a :class:`ChildLink`
+    wraps a child that carries ``FAMC`` membership detail. The matching
+    ``FAMS``/``FAMC`` back-pointers on the linked individuals are derived by
+    the writer (ADR-0001), not stored here.
     """
 
     husband: Individual | None = None
     wife: Individual | None = None
-    children: list[Individual | VoidPointer] = field(default_factory=list)
+    children: list[Individual | ChildLink | VoidPointer] = field(default_factory=list)
     restrictions: list[Restriction | str] = field(default_factory=list)
     attributes: list[Attribute] = field(default_factory=list)
     events: list[Event] = field(default_factory=list)

@@ -1,6 +1,6 @@
 # 18 — INDI.FAMC pedigree/status + event-level FAMC detail
 
-Status: ready-for-human
+Status: done
 Type: HITL
 
 ## Parent

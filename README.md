@@ -6,7 +6,6 @@ A [GEDCOM 7.0.18](https://gedcom.io/specifications/FamilySearchGEDCOMv7.html) wr
 
 ### Known limitations
 
-- **`INDI.FAMC` pedigree/status detail** (`PEDI`/`STAT` on a membership) and **event-level `FAMC`** (`BIRT`/`CHR`/`ADOP`) — `FAMS`/`FAMC` are derived as bare pointers (ADR-0001); per-membership detail is deferred pending an ADR decision (tracked as issue #18).
 - **Reading/parsing** GEDCOM — permanently out of scope; this is a writer only.
 
 ## Tech stack

@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 from collections.abc import Iterator
+from typing import TYPE_CHECKING
 
-from ..enums import Medium, NameType, OrdinanceStatus, enum_value
+from ..enums import AdoptingParent, Medium, NameType, OrdinanceStatus, enum_value
 from ..lines import Line
 from ..model import (
     Address,
@@ -24,6 +25,9 @@ from ..model import (
     Place,
 )
 from ..types import date_value_gedcom, integer, text_list
+
+if TYPE_CHECKING:
+    from ._context import Context
 
 
 def _name_pieces_lines(pieces: NamePieces, level: int) -> Iterator[Line]:
@@ -152,7 +156,7 @@ def identifier_lines(identifier: Identifier, level: int) -> Iterator[Line]:
         yield Line(level + 1, "TYPE", str(identifier.type))
 
 
-def event_detail_lines(detail: EventDetail, level: int) -> Iterator[Line]:
+def event_detail_lines(detail: EventDetail, level: int, ctx: Context) -> Iterator[Line]:
     if detail.date is not None:
         yield Line(level, "DATE", date_value_gedcom(detail.date))
         if detail.date_time is not None:
@@ -170,23 +174,29 @@ def event_detail_lines(detail: EventDetail, level: int) -> Iterator[Line]:
         yield Line(level, "RELI", detail.religion)
     if detail.cause is not None:
         yield Line(level, "CAUS", detail.cause)
+    if detail.family_child is not None:  # event-level FAMC (BIRT/CHR/ADOP)
+        yield Line(level, "FAMC", ctx.table.of(detail.family_child), is_pointer=True)
+        if detail.adopting_parent is not None:
+            yield Line(level + 1, "ADOP", enum_value(detail.adopting_parent, AdoptingParent))
+            if detail.adopting_parent_phrase is not None:
+                yield Line(level + 2, "PHRASE", detail.adopting_parent_phrase)
 
 
-def event_lines(event: Event, level: int) -> Iterator[Line]:
+def event_lines(event: Event, level: int, ctx: Context) -> Iterator[Line]:
     payload = event.text if event.tag == "EVEN" else ("Y" if event.occurred else None)
     yield Line(level, event.tag, payload)
     if event.type is not None:
         yield Line(level + 1, "TYPE", event.type)
     if event.detail is not None:
-        yield from event_detail_lines(event.detail, level + 1)
+        yield from event_detail_lines(event.detail, level + 1, ctx)
 
 
-def attribute_lines(attribute: Attribute, level: int) -> Iterator[Line]:
+def attribute_lines(attribute: Attribute, level: int, ctx: Context) -> Iterator[Line]:
     yield Line(level, attribute.tag, attribute.value)
     if attribute.type is not None:
         yield Line(level + 1, "TYPE", attribute.type)
     if attribute.detail is not None:
-        yield from event_detail_lines(attribute.detail, level + 1)
+        yield from event_detail_lines(attribute.detail, level + 1, ctx)
 
 
 def non_event_lines(non_event: NonEvent, level: int) -> Iterator[Line]:

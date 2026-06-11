@@ -5,9 +5,13 @@ places, addresses, citations, events, and the like.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
-from ..enums import ExidType, Medium, NameType, OrdinanceStatus
+from ..enums import AdoptingParent, ExidType, Medium, NameType, OrdinanceStatus
 from ..types import DateExact, DatePeriod, DateValue, Latitude, Longitude, Time
+
+if TYPE_CHECKING:
+    from ._records import Family
 
 
 @dataclass(frozen=True)
@@ -179,6 +183,10 @@ class EventDetail:
     agency: str | None = None  # AGNC
     religion: str | None = None  # RELI
     cause: str | None = None  # CAUS
+    # Event-level FAMC (BIRT/CHR/ADOP): the family the event links the child to.
+    family_child: Family | None = None  # FAMC
+    adopting_parent: AdoptingParent | str | None = None  # ADOP.FAMC.ADOP
+    adopting_parent_phrase: str | None = None
 
 
 @dataclass
